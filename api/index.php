@@ -101,7 +101,9 @@ switch ($endpoint) {
         if ($requestMethod === 'POST') {
             $user = new User($db);
             if ($user->logout()) {
-                echo json_encode(["success" => true, "message" => "User logged out successfully"]);
+                http_response_code(302);
+                header('Location: http://localhost/ems/public/views/login.php');
+                // echo json_encode(["success" => true, "message" => "User logged out successfully"]);
                 exit;
             } else {
                 echo json_encode(["success" => false, "message" => "Logout failed"]);
@@ -198,9 +200,24 @@ switch ($endpoint) {
 
     case 'attendees':
         if ($requestMethod === 'GET') {
-            $eventId = $_GET['id'];
             $attendee = new Attendee($db);
-            echo json_encode($attendee->getAllAttendees($eventId));
+    
+            // Fetch all attendees
+            $attendees = $attendee->getAllAttendees();
+    
+            // Loop through attendees and add event names
+            $attendeesWithEventNames = [];
+            foreach ($attendees as $attendeeData) {
+                $eventId = $attendeeData['event_id'];
+                $eventName = $attendee->getEventName($eventId); // Fetch event name for each attendee
+    
+                // Combine attendee data with event name
+                $attendeeData['event_name'] = $eventName;
+                $attendeesWithEventNames[] = $attendeeData;
+            }
+    
+            // Return the combined data as JSON
+            echo json_encode($attendeesWithEventNames);
         }
         break;
 

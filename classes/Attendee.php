@@ -4,7 +4,7 @@ class Attendee {
     private $conn;
 
     public function __construct($db) {
-        echo $_SESSION['username'];
+        // echo $_SESSION['username'];
         if (!isset($_SESSION['username'])) {
             http_response_code(403); 
             echo json_encode(["success" => false,"message" => "Unauthorized"]);
@@ -58,6 +58,16 @@ class Attendee {
             return true;
         }
         return false;
+    }
+
+    // Get event name from event id
+    public function getEventName($eventId) {
+        $stmt = $this->conn->prepare("SELECT name FROM events WHERE id = ?");
+        $stmt->bind_param("s", $eventId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $event = $result->fetch_assoc();
+        return $event['name'];
     }
 
 }
