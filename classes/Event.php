@@ -1,20 +1,22 @@
 <?php
 session_start();
-class Event {
+class Event
+{
     private $conn;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         if (!isset($_SESSION['username'])) {
-            http_response_code(403); 
-            echo json_encode(["success" => false,"message" => "Unauthorized"]);
+            http_response_code(403);
+            echo json_encode(["success" => false, "message" => "Unauthorized"]);
             exit;
         }
         $this->conn = $db->getConnection();
-
     }
 
     // Create a new event
-    public function create( $name, $description, $date, $time, $location, $maxCapacity) {
+    public function create($name, $description, $date, $time, $location, $maxCapacity)
+    {
         $userId = $_SESSION['user_id'];
         $stmt = $this->conn->prepare("INSERT INTO events (uuid, user_id, name, description, date, time, location, max_capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $uuid = bin2hex(random_bytes(8));
@@ -27,14 +29,22 @@ class Event {
     }
 
     // Get all events
-    public function getAll() {
+    public function getAll()
+    {
         $user_id = $_SESSION['user_id'];
-        $result = $this->conn->query("SELECT * FROM events WHERE user_id = $user_id");
-        return $result->fetch_all(MYSQLI_ASSOC);
+
+        if (!isset($user_id)) {
+            $result = $this->conn->query("SELECT * FROM events");
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            $result = $this->conn->query("SELECT * FROM events WHERE user_id = $user_id");
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 
     // Delete an event
-    public function delete($eventId) {
+    public function delete($eventId)
+    {
         $userId = $_SESSION['user_id'];
         $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ? AND user_id = ?");
         $stmt->bind_param("ss", $eventId, $userId);
@@ -46,12 +56,13 @@ class Event {
     }
 
     // check if event exists
-    public function checkEventExists($eventId) {
+    public function checkEventExists($eventId)
+    {
         $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ?");
         $stmt->bind_param("i", $eventId);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows > 0) {
             return true;
         }
@@ -59,7 +70,8 @@ class Event {
     }
 
     // check if the user is the owner of the event
-    public function checkEventOwner($eventId) {
+    public function checkEventOwner($eventId)
+    {
         $userId = $_SESSION['user_id'];
         $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ? AND user_id = ?");
         $stmt->bind_param("ii", $eventId, $userId);
@@ -72,4 +84,3 @@ class Event {
         return false;
     }
 }
-?>

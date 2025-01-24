@@ -72,6 +72,71 @@
             z-index: 1;
             padding-top: 80px; /* Space for the fixed navbar */
         }
+
+        .event-card {
+            background-color: #212145;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal {
+            z-index: 1050; /* Ensure modal is above Particles.js */
+        }
+
+        .modal-backdrop {
+            z-index: 1040; /* Ensure backdrop is above Particles.js but below modal */
+        }
+
+        .modal-backdrop.fade.show {
+            background-color: rgba(0, 0, 0, 0.5); /* Ensure the backdrop is visible */
+        }
+
+        .modal-content {
+            background-color: #212145;
+            color: #ffffff;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: #ffffff;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .modal-body .form-control {
+            background-color: #2a2a4d;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+
+        .modal-body .form-control:focus {
+            background-color: #2a2a4d;
+            color: #ffffff;
+            border-color: #007bff;
+        }
+
+        .modal-body .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .modal-body .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-backdrop {
+    display: none; /* This will hide the backdrop */
+}
     </style>
 </head>
 

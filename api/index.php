@@ -5,6 +5,7 @@ require_once __DIR__ . '/../classes/Database.php';
 require_once __DIR__ . '/../classes/User.php';
 require_once __DIR__ . '/../classes/Event.php';
 require_once __DIR__ . '/../classes/Attendee.php';
+require_once __DIR__ . '/../classes/PublicEvents.php';
 
 $db = new Database();
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -118,6 +119,16 @@ switch ($endpoint) {
 
     case 'events':
         $event = new Event($db);
+        if ($requestMethod === 'GET') {
+            echo json_encode($event->getAll());
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+        }
+        break;
+
+    case 'events/public':
+        $event = new PublicEvents($db);
         if ($requestMethod === 'GET') {
             echo json_encode($event->getAll());
         } else {
