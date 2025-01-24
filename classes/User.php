@@ -13,7 +13,7 @@ class User
     public function register($username, $name, $email, $password)
     {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $uuid = $this->generateUuid();
+        $uuid = bin2hex(random_bytes(8));
         $stmt = $this->conn->prepare("INSERT INTO users (uuid, username, name, email, password) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $uuid, $username, $name, $email, $hashedPassword);
 
@@ -54,12 +54,6 @@ class User
         return true;
     }
 
-    // Generate a UUID
-    private function generateUuid()
-    {
-        return bin2hex(random_bytes(8));
-    }
-
     // Check if a username already exists
     public function checkUsernameExists($username)
     {
@@ -79,20 +73,6 @@ class User
     {
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    // Check if a user ID exists
-    public function checkUserIdExists($userId)
-    {
-        $stmt = $this->conn->prepare("SELECT id FROM users WHERE id = ?");
-        $stmt->bind_param("s", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
 
