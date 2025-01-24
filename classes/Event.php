@@ -14,7 +14,8 @@ class Event {
     }
 
     // Create a new event
-    public function create($userId, $name, $description, $date, $time, $location, $maxCapacity) {
+    public function create( $name, $description, $date, $time, $location, $maxCapacity) {
+        $userId = $_SESSION['user_id'];
         $stmt = $this->conn->prepare("INSERT INTO events (uuid, user_id, name, description, date, time, location, max_capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $uuid = bin2hex(random_bytes(8));
         $stmt->bind_param("sisssssi", $uuid, $userId, $name, $description, $date, $time, $location, $maxCapacity);
@@ -27,14 +28,15 @@ class Event {
 
     // Get all events
     public function getAll() {
-        $result = $this->conn->query("SELECT * FROM events");
+        $user_id = $_SESSION['user_id'];
+        $result = $this->conn->query("SELECT * FROM events WHERE user_id = $user_id");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Delete an event
     public function delete($eventId) {
         $userId = $_SESSION['user_id'];
-        $stmt = $this->conn->prepare("DELETE FROM events WHERE uuid = ? AND user_id = ?");
+        $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ? AND user_id = ?");
         $stmt->bind_param("ss", $eventId, $userId);
 
         if ($stmt->execute()) {
@@ -50,6 +52,20 @@ class Event {
         $stmt->execute();
         $result = $stmt->get_result();
         
+        if ($result->num_rows > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    // check if the user is the owner of the event
+    public function checkEventOwner($eventId) {
+        $userId = $_SESSION['user_id'];
+        $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $eventId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
         if ($result->num_rows > 0) {
             return true;
         }

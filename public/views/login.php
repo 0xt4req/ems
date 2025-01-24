@@ -108,7 +108,7 @@
         <div class="col-md-6">
             <div class="card mt-2">
                 <div class="card-header">
-                    <h2>Register</h2>
+                    <h2>Login</h2>
                 </div>
                 <div class="card-body">
                     <form id="loginForm" method="POST">
@@ -157,7 +157,7 @@
                     title: 'Success',
                     text: data.message
                 }).then(() => {
-                    window.location.href = '../user/dashboard.php'; // Redirect to user dashboard page
+                    window.location.href = 'user/dashboard.php'; // Redirect to user dashboard page
                 });
             } else {
                 Swal.fire({

@@ -1,498 +1,288 @@
-<?php include('../header.php'); ?>
+<?php
+session_start();
 
-<!-- Custom CSS for the dashboard -->
-<style>
-    .dashboard-container {
-        padding: 2rem;
-    }
+if (!isset($_SESSION['username'])) {
+    http_response_code(302);
+    header("Location: ../login.php");
+    exit;
+}
 
-    .card {
-        background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
-        border: none;
-        border-radius: 15px;
-        backdrop-filter: blur(10px); /* Blur effect */
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
+?>
+<!DOCTYPE html>
+<html lang="en">
 
-    .card-header {
-        background: transparent;
-        border-bottom: none;
-        padding: 1rem 0;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    .card-header h2 {
-        color: #ffffff;
-        font-weight: 600;
-        margin: 0;
-    }
+</head>
 
-    .btn-primary {
-        background: #007bff; /* Bootstrap primary blue */
-        border: none;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: 500;
-        transition: background 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: #0056b3; /* Darker blue on hover */
-    }
-
-    .btn-danger {
-        background: #dc3545; /* Bootstrap danger red */
-        border: none;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: 500;
-        transition: background 0.3s ease;
-    }
-
-    .btn-danger:hover {
-        background: #c82333; /* Darker red on hover */
-    }
-
-    .btn-warning {
-        background: #ffc107; /* Bootstrap warning yellow */
-        border: none;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: 500;
-        transition: background 0.3s ease;
-    }
-
-    .btn-warning:hover {
-        background: #e0a800; /* Darker yellow on hover */
-    }
-
-    .table {
-        color: #ffffff; /* White text for the table */
-    }
-
-    .dataTables_wrapper .dataTables_filter input {
-        color: #ffffff; /* White text for search input */
-        background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
-        border: none;
-        border-radius: 5px;
-        padding: 5px 10px;
-    }
-
-    .dataTables_wrapper .dataTables_length select {
-        color: #ffffff; /* White text for length select */
-        background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
-        border: none;
-        border-radius: 5px;
-        padding: 5px 10px;
-    }
-
-    .dataTables_wrapper .dataTables_info {
-        color: #ffffff; /* White text for table info */
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: #ffffff !important; /* White text for pagination buttons */
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: rgba(255, 255, 255, 0.1); /* Semi-transparent background on hover */
-    }
-
-    .modal-content {
-        background: rgba(26, 26, 52, 0.9); /* Semi-transparent dark blue */
-        backdrop-filter: blur(10px); /* Blur effect */
-        border: none;
-        border-radius: 15px;
-    }
-
-    .modal-header {
-        border-bottom: none;
-    }
-
-    .modal-title {
-        color: #ffffff;
-    }
-
-    .modal-body {
-        color: #ffffff;
-    }
-
-    .modal-footer {
-        border-top: none;
-    }
-</style>
-
-<!-- Dashboard Content -->
-<div class="dashboard-container">
-    <div class="card">
-        <div class="card-header">
-            <h2>Events</h2>
-        </div>
-        <div class="card-body">
-            <!-- Add Event Button -->
-            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEventModal">
-                Add Event
-            </button>
-
-            <!-- Events Table -->
-            <table id="eventsTable" class="table table-striped table-bordered" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Max Capacity</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data will be populated dynamically using DataTables -->
-                </tbody>
-            </table>
-        </div>
+<body>
+    <div class="container mt-5">
+        <h2>Event Dashboard</h2>
+        <button id="addEventBtn" class="btn btn-primary mb-3">Add Event</button>
+        <table id="eventsTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Event Name</th>
+                    <th>Event Date</th>
+                    <th>Location</th>
+                    <th>Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
     </div>
-</div>
 
-<!-- Add Event Modal -->
-<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addEventModalLabel">Add Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addEventForm">
-                    <div class="form-group mb-3">
-                        <label for="eventName">Name</label>
-                        <input type="text" class="form-control" id="eventName" name="eventName" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="eventDescription">Description</label>
-                        <textarea class="form-control" id="eventDescription" name="eventDescription" required></textarea>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="eventDate">Date</label>
-                        <input type="date" class="form-control" id="eventDate" name="eventDate" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="eventTime">Time</label>
-                        <input type="time" class="form-control" id="eventTime" name="eventTime" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="eventLocation">Location</label>
-                        <input type="text" class="form-control" id="eventLocation" name="eventLocation" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="eventCapacity">Max Capacity</label>
-                        <input type="number" class="form-control" id="eventCapacity" name="eventCapacity" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="addEvent()">Save</button>
+    <!-- Add Event Modal -->
+    <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Event</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <div class="form-group">
+                            <label for="eventName">Event Name</label>
+                            <input type="text" class="form-control" id="eventName" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Event Description</label>
+                            <textarea name="description" id="description" class="form-control"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventDate">Event Date</label>
+                            <input type="date" class="form-control" id="eventDate" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventTime">Event Time</label>
+                            <input type="time" class="form-control" id="eventTime" name="time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventLocation">Event Location</label>
+                            <input type="text" class="form-control" id="eventLocation" name="location" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxCapacity">Max Capacity</label>
+                            <input type="number" class="form-control" id="maxCapacity" name="maxCapacity" required>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn">Save Event</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Event Modal -->
-<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editEventForm">
-                    <input type="hidden" id="editEventId" name="editEventId">
-                    <div class="form-group mb-3">
-                        <label for="editEventName">Name</label>
-                        <input type="text" class="form-control" id="editEventName" name="editEventName" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="editEventDescription">Description</label>
-                        <textarea class="form-control" id="editEventDescription" name="editEventDescription" required></textarea>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="editEventDate">Date</label>
-                        <input type="date" class="form-control" id="editEventDate" name="editEventDate" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="editEventTime">Time</label>
-                        <input type="time" class="form-control" id="editEventTime" name="editEventTime" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="editEventLocation">Location</label>
-                        <input type="text" class="form-control" id="editEventLocation" name="editEventLocation" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="editEventCapacity">Max Capacity</label>
-                        <input type="number" class="form-control" id="editEventCapacity" name="editEventCapacity" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="updateEvent()">Save Changes</button>
+    <!-- View Description Modal -->
+    <div class="modal fade" id="viewDescriptionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Event Description</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="eventDescription"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Attendees Modal -->
-<div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="attendeesModalLabel">Attendees</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table id="attendeesTable" class="table table-striped table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data will be populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DataTables and Bootstrap JS -->
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
-<!-- Custom JS -->
-<script>
-    // Initialize DataTable
-    $(document).ready(function() {
-        $('#eventsTable').DataTable({
-            ajax: {
-                url: '/ems/api/events', // API endpoint to fetch events
-                dataSrc: ''
-            },
-            columns: [
-                { data: 'id' },
-                { data: 'name' },
-                { data: 'description' },
-                { data: 'date' },
-                { data: 'time' },
-                { data: 'location' },
-                { data: 'max_capacity' },
-                {
-                    data: null,
-                    render: function(data) {
-                        return `
-                            <button class="btn btn-primary btn-sm" onclick="viewAttendees(${data.id})">Attendees</button>
-                            <button class="btn btn-warning btn-sm" onclick="editEvent(${data.id})">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteEvent(${data.id})">Delete</button>
-                        `;
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            var table = $('#eventsTable').DataTable({
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                layout: {
+                    topStart: 'buttons'
+                },
+                columns: [{
+                        data: 'id'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'date'
+                    },
+                    {
+                        data: 'location'
+                    },
+                    {
+                        data: 'time'
+                    },
+                    {
+                        data: null,
+                        render: function(data) {
+                            return `
+                <button class="btn btn-info btn-sm view-btn" data-id="${data.id}" data-description="${data.description}">View Details</button>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}">Delete</button>
+              `;
+                        }
                     }
-                }
-            ]
-        });
-    });
+                ]
 
-    // Add Event
-    function addEvent() {
-        const formData = {
-            name: $('#eventName').val(),
-            description: $('#eventDescription').val(),
-            date: $('#eventDate').val(),
-            time: $('#eventTime').val(),
-            location: $('#eventLocation').val(),
-            max_capacity: $('#eventCapacity').val()
-        };
+            });
 
-        fetch('/ems/api/events', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                $('#addEventModal').modal('hide');
-                $('#eventsTable').DataTable().ajax.reload();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Event added successfully!'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'Failed to add event.'
+            // Fetch events and populate the table
+            function fetchEvents() {
+                $.ajax({
+                    url: '/ems/api/events', // Endpoint to fetch events
+                    method: 'GET',
+                    success: function(response) {
+                        // Clear the table and re-populate it with new data
+                        table.clear();
+                        table.rows.add(response).draw();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching events:', error);
+                    }
                 });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred. Please try again.'
+
+            // Fetch events on page load
+            fetchEvents();
+
+            // Open Add Event Modal
+            $('#addEventBtn').click(function() {
+                $('#addEventModal').modal('show');
             });
-        });
-    }
 
-    // Edit Event
-    function editEvent(eventId) {
-        fetch(`/ems/api/events/${eventId}`)
-        .then(response => response.json())
-        .then(data => {
-            $('#editEventId').val(data.id);
-            $('#editEventName').val(data.name);
-            $('#editEventDescription').val(data.description);
-            $('#editEventDate').val(data.date);
-            $('#editEventTime').val(data.time);
-            $('#editEventLocation').val(data.location);
-            $('#editEventCapacity').val(data.max_capacity);
-            $('#editEventModal').modal('show');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred. Please try again.'
-            });
-        });
-    }
+            // Save Event
+            $('#saveEventBtn').click(function() {
+                var eventName = $('#eventName').val();
+                var description = $('#description').val();
+                var location = $('#eventLocation').val();
+                var time = $('#eventTime').val();
+                var maxCapacity = $('#maxCapacity').val();
+                var eventDate = $('#eventDate').val();
 
-    // Update Event
-    function updateEvent() {
-        const formData = {
-            id: $('#editEventId').val(),
-            name: $('#editEventName').val(),
-            description: $('#editEventDescription').val(),
-            date: $('#editEventDate').val(),
-            time: $('#editEventTime').val(),
-            location: $('#editEventLocation').val(),
-            max_capacity: $('#editEventCapacity').val()
-        };
+                if (eventName && eventDate) {
+                    // Create an object with the event data
+                    var eventData = {
+                        name: eventName,
+                        description: description,
+                        date: eventDate,
+                        time: time,
+                        location: location,
+                        max_capacity: maxCapacity
+                    };
 
-        fetch(`/ems/api/events/${formData.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                $('#editEventModal').modal('hide');
-                $('#eventsTable').DataTable().ajax.reload();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Event updated successfully!'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'Failed to update event.'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred. Please try again.'
-            });
-        });
-    }
-
-    // Delete Event
-    function deleteEvent(eventId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this event!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/ems/api/events/${eventId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        $('#eventsTable').DataTable().ajax.reload();
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
-                            text: 'Event deleted successfully.'
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.message || 'Failed to delete event.'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred. Please try again.'
+                    $.ajax({
+                        url: '/ems/api/event/create', // Endpoint to add event
+                        method: 'POST',
+                        contentType: 'application/json', // Set the content type to JSON
+                        data: JSON.stringify(eventData), // Convert the data to JSON format
+                        success: function(response) {
+                            $('#addEventModal').modal('hide');
+                            if (response['succes'] === false) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response['message']
+                                });
+                                return;
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response['message']
+                                });
+                            }
+                            fetchEvents(); // Refresh the table after adding an event
+                            $('#eventForm')[0].reset(); // Reset form
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error adding event:', error);
+                        }
                     });
-                });
-            }
-        });
-    }
+                }
+            });
 
-    // View Attendees
-    function viewAttendees(eventId) {
-        fetch(`/ems/api/events/${eventId}/attendees`)
-        .then(response => response.json())
-        .then(data => {
-            $('#attendeesTable').DataTable().clear().rows.add(data).draw();
-            $('#attendeesModal').modal('show');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred. Please try again.'
+            // Delete Event
+            $('#eventsTable').on('click', '.delete-btn', function() {
+                var eventId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) { // Check if the user confirmed the action
+                        $.ajax({
+                            url: '/ems/api/event/delete', // Endpoint to delete event
+                            method: 'DELETE',
+                            contentType: 'application/json', // Set content type to JSON
+                            data: JSON.stringify({
+                                id: eventId
+                            }), // Send data as JSON
+                            success: function(response) {
+                                fetchEvents(); // Refresh the table after deletion
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Event has been deleted.'
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error deleting event:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to delete event.'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // View Description
+            $('#eventsTable').on('click', '.view-btn', function() {
+                var description = $(this).data('description');
+                $('#eventDescription').text(description); // Set the description in the modal
+                $('#viewDescriptionModal').modal('show'); // Show the modal
             });
         });
-    }
-</script>
+    </script>
+</body>
 
-<?php include('../footer.php'); ?>
+</html>

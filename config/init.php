@@ -56,7 +56,7 @@ $sql = "
         location VARCHAR(100) NOT NULL,
         max_capacity INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE attendees (
@@ -66,7 +66,7 @@ $sql = "
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (event_id) REFERENCES events(id)
+        FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
     );
 
     CREATE TABLE admins (
