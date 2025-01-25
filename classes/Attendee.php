@@ -58,6 +58,15 @@ class Attendee {
         return $event['name'];
     }
 
+    // total attendees
+    public function totalAttendees() {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM attendees");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+
 }
 
 

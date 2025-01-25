@@ -1,16 +1,10 @@
 <?php
-session_start();
-class Event
+class BaseEvent
 {
     private $conn;
 
     public function __construct($db)
     {
-        if (!isset($_SESSION['username'])) {
-            http_response_code(403);
-            echo json_encode(["success" => false, "message" => "Unauthorized"]);
-            exit;
-        }
         $this->conn = $db->getConnection();
     }
 
@@ -29,17 +23,11 @@ class Event
     }
 
     // Get all events
-    public function getAll()
-    {
-        $user_id = $_SESSION['user_id'];
-
-        if (!isset($user_id)) {
-            $result = $this->conn->query("SELECT * FROM events");
-            return $result->fetch_all(MYSQLI_ASSOC);
-        } else {
-            $result = $this->conn->query("SELECT * FROM events WHERE user_id = $user_id");
-            return $result->fetch_all(MYSQLI_ASSOC);
-        }
+    public function getAll() {
+        $stmt = $this->conn->prepare("SELECT * FROM events");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Delete an event
@@ -82,5 +70,15 @@ class Event
             return true;
         }
         return false;
+    }
+
+    // total events
+    public function totalEvents()
+    {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
     }
 }

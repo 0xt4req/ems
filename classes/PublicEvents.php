@@ -1,17 +1,21 @@
 <?php 
 
-class PublicEvents {
-    private $conn;
-    public function __construct($db) {
-        $this->conn = $db->getConnection();
-    }
+class PublicEvents extends BaseEvent {
 
     public function getAll() {
-        $stmt = $this->conn->prepare("SELECT * FROM events");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return Parent::getAll();
     }
+
+    // check if the event exists
+    public function checkEventExists($eventId) {
+        return parent::checkEventExists($eventId);
+    }
+
+    // totalEvents
+    public function totalEvents() {
+        return parent::totalEvents();
+    }
+
 }
 
 

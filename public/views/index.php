@@ -45,7 +45,7 @@
             fetch('/ems/api/events/public')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
+                    // console.log(data);
                     eventCardsContainer.innerHTML = ''; // Clear existing content
 
                     // Loop through the events and create cards

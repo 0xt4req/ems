@@ -88,9 +88,6 @@ if (!isset($_SESSION['username'])) {
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#"><i class="fas fa-home"></i> Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-users"></i> Attendees</a>
-                    </li>
                 </ul>
                 <form action="/ems/api/logout" method="POST"><button type="submit" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
             </div>
@@ -105,7 +102,7 @@ if (!isset($_SESSION['username'])) {
                 <div class="card" style="width: 18rem;">
                     <div class="card-body mb-3">
                         <h5 class="card-title"><i class="fas fa-calendar-check"></i> Total Events</h5>
-                        <p class="card-text">34</p>
+                        <p class="card-text" id="totalEvents"></p>
                     </div>
                 </div>
             </div>
@@ -113,7 +110,7 @@ if (!isset($_SESSION['username'])) {
                 <div class="card" style="width: 18rem;">
                     <div class="card-body mb-3">
                         <h5 class="card-title"><i class="fas fa-users"></i> Total Attendees</h5>
-                        <p class="card-text">34</p>
+                        <p class="card-text" id="totalAttendees"></p>
                     </div>
                 </div>
             </div>
@@ -485,6 +482,34 @@ if (!isset($_SESSION['username'])) {
                     }    
                 });
             });
+
+            // Fetch total events and attendees on page load
+            function fetchTotalEvents() {
+                $.ajax({
+                    url: '/ems/api/totalEvents', // Endpoint to fetch total events
+                    method: 'GET',
+                    success: function(response) {
+                        $('#totalEvents').text(response.total);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching total events:', error);
+                    }
+                });
+            }
+
+            function fetchTotalAttendees() {
+                $.ajax({
+                    url: '/ems/api/totalAttendees', // Endpoint to fetch total attendees
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        $('#totalAttendees').text(response.total);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching total attendees:', error);
+                    }
+                });
+            }
 
             // Fetch events on page load
             fetchEvents();

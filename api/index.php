@@ -1,11 +1,15 @@
 <?php
 header("Content-Type: application/json");
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 
 require_once __DIR__ . '/../classes/Database.php';
 require_once __DIR__ . '/../classes/User.php';
-require_once __DIR__ . '/../classes/Event.php';
 require_once __DIR__ . '/../classes/Attendee.php';
-require_once __DIR__ . '/../classes/PublicEvents.php';
+require_once __DIR__ . '/../classes/BaseEvent.php';
+// require_once __DIR__ . '/../classes/PublicEvents.php';
+require_once __DIR__ . '/../classes/PrivateEvent.php';
 require_once __DIR__ . '/../classes/PublicAttendee.php';
 
 $db = new Database();
@@ -119,9 +123,19 @@ switch ($endpoint) {
         break;
 
     case 'events':
-        $event = new Event($db);
+        $event = new PrivateEvent($db);
         if ($requestMethod === 'GET') {
             echo json_encode($event->getAll());
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+        }
+        break;
+    
+    case 'totalEvents':
+        $event = new PublicEvents($db);
+        if ($requestMethod === 'GET') {
+            echo json_encode($event->totalEvents());
         } else {
             http_response_code(405); // Method Not Allowed
             echo json_encode(["message" => "Method not allowed"]);
@@ -129,18 +143,24 @@ switch ($endpoint) {
         break;
 
     case 'events/public':
-        $event = new PublicEvents($db);
-        if ($requestMethod === 'GET') {
-            echo json_encode($event->getAll());
-        } else {
-            http_response_code(405); // Method Not Allowed
-            echo json_encode(["message" => "Method not allowed"]);
+        try {$event = new PublicEvents($db);
+            // echo "hi"; exit;
+            if ($requestMethod === 'GET') {
+                echo json_encode($event->getAll());
+            } else {
+                http_response_code(405); // Method Not Allowed
+                echo json_encode(["message" => "Method not allowed"]);
+            }
+        } catch (Exception $e) {
+            echo "hi";
+            echo json_encode(["message" => $e->getMessage()]);
         }
         break;
 
     case 'event/create':
         if ($requestMethod === 'POST') {
-            $event = new Event($db);
+            echo "hi";
+            $event = new PrivateEvent($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
             // print_r($data);exit();
@@ -183,7 +203,7 @@ switch ($endpoint) {
             exit;
         }
 
-        $event = new Event($db);
+        $event = new PrivateEvent($db);
         // Check if the event exists
         if (!$event->checkEventExists($eventId)) {
             http_response_code(404); // Not Found
@@ -232,6 +252,21 @@ switch ($endpoint) {
     
             // Return the combined data as JSON
             echo json_encode($attendeesWithEventNames);
+        }
+        break;
+    
+    case 'totalAttendees':
+        if ($requestMethod === 'GET') {
+            $attendee = new Attendee($db);
+    
+            // Fetch total number of attendees
+            $totalAttendees = $attendee->totalAttendees();
+    
+            // Return the total number of attendees as JSON
+            echo json_encode($totalAttendees);
+        }else{
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
         }
         break;
 

@@ -1,6 +1,8 @@
 <?php 
 
-class PublicAttendee {
+include('PublicEvents.php');
+
+class PublicAttendee extends PublicEvents {
     private $conn;
     public function __construct($db) {
         $this->conn = $db->getConnection();
@@ -39,20 +41,6 @@ class PublicAttendee {
     {
         $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ? AND max_capacity = (SELECT COUNT(*) FROM attendees WHERE event_id = ?)");
         $stmt->bind_param("ii", $eventId, $eventId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    // check if event exists
-    public function checkEventExists($eventId)
-    {
-        $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ?");
-        $stmt->bind_param("i", $eventId);
         $stmt->execute();
         $result = $stmt->get_result();
 
