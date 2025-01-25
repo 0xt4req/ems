@@ -26,10 +26,6 @@
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" required>
-                        </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
@@ -90,11 +86,10 @@
                     eventId: currentEventId,
                     name: document.getElementById('name').value,
                     email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value
                 };
 
                 // Send registration data to the server in JSON format
-                fetch('/ems/api/register', {
+                fetch('/ems/api/attendees/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -103,7 +98,20 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        alert('Registration successful!');
+                        console.log(data);
+                        if (data.success) {
+                            Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: data.message
+                            });
+                        }else{
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                            });
+                        }
                         registrationModal.hide();
                         document.getElementById('registrationForm').reset();
                     })

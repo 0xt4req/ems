@@ -6,6 +6,7 @@ require_once __DIR__ . '/../classes/User.php';
 require_once __DIR__ . '/../classes/Event.php';
 require_once __DIR__ . '/../classes/Attendee.php';
 require_once __DIR__ . '/../classes/PublicEvents.php';
+require_once __DIR__ . '/../classes/PublicAttendee.php';
 
 $db = new Database();
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -142,6 +143,8 @@ switch ($endpoint) {
             $event = new Event($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
+            // print_r($data);exit();
+
             // Get the user_id, name, description, date, time, location, and max_capacity from the request body
             $name = htmlspecialchars($data['name']);
             $description = htmlspecialchars($data['description']);
@@ -234,16 +237,15 @@ switch ($endpoint) {
 
     case 'attendees/create':
         if ($requestMethod === 'POST') {
-            $attendees = new Attendee($db);
+            $attendees = new PublicAttendee($db);
 
             $data = json_decode(file_get_contents('php://input'), true);
-            $eventId = htmlspecialchars($data['event_id']);
+            $eventId = htmlspecialchars($data['eventId']);
             $name = htmlspecialchars($data['name']);
             $email = htmlspecialchars($data['email']);
 
-            $event = new Event($db);
             // check if the event exists
-            if (!$event->checkEventExists($eventId)) {
+            if (!$attendees->checkEventExists($eventId)) {
                 echo json_encode(["success" => false, "message" => "Event does not exists"]);
                 exit;
             }
@@ -254,10 +256,16 @@ switch ($endpoint) {
                 exit;
             }
 
+            // check if the event is full
+            if ($attendees->checkEventFull($eventId)) {
+                echo json_encode(["success" => false, "message" => "Event is full"]);
+                exit;
+            }
+
             // print_r($data);exit();
 
-            if ($attendees->create($eventId, $name, $email)) {
-                echo json_encode(["success" => true, "message" => "Attendee created successfully"]);
+            if ($attendees->createAttendee($eventId, $name, $email)) {
+                echo json_encode(["success" => true, "message" => "You have successfully registered for the event. The Host will send you confirmation email soon."]);
             } else {
                 echo json_encode(["success" => false, "message" => "Attendee creation failed"]);
             }

@@ -48,18 +48,6 @@ class Attendee {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    // check if attendee exists
-    public function checkAttendeeExists($eventId, $email) {
-        $stmt = $this->conn->prepare("SELECT id FROM attendees WHERE event_id = ? AND email = ?");
-        $stmt->bind_param("ss", $eventId, $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            return true;
-        }
-        return false;
-    }
-
     // Get event name from event id
     public function getEventName($eventId) {
         $stmt = $this->conn->prepare("SELECT name FROM events WHERE id = ?");
