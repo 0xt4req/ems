@@ -1,27 +1,30 @@
-<?php 
-session_start();
-class Attendee {
+<?php
+class Attendee
+{
     private $conn;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         // echo $_SESSION['username'];
         if (!isset($_SESSION['username'])) {
-            http_response_code(403); 
-            echo json_encode(["success" => false,"message" => "Unauthorized"]);
+            http_response_code(403);
+            echo json_encode(["success" => false, "message" => "Unauthorized"]);
             exit;
+            // or we can redirect to login page
         }
         $this->conn = $db->getConnection();
     }
 
-    public function create($eventId, $name, $email) {
+    public function create($eventId, $name, $email)
+    {
 
         // insert attendee
         $stmt = $this->conn->prepare("INSERT INTO attendees (uuid, event_id, name, email) VALUES (?, ?, ?, ?)");
-        if(!$stmt) {
+        if (!$stmt) {
             return false;
         }
         $uuid = bin2hex(random_bytes(8));
-        $stmt->bind_param("siss",$uuid, $eventId, $name, $email);
+        $stmt->bind_param("siss", $uuid, $eventId, $name, $email);
 
         if ($stmt->execute()) {
             return true;
@@ -29,17 +32,36 @@ class Attendee {
         return false;
     }
 
-    public function getAllAttendees(){
-        $stmt = $this->conn->prepare("SELECT * FROM attendees");
+
+    public function getAllAttendees()
+    {
+        // echo $_SESSION['user_id'];exit;
+        $userId = $_SESSION['user_id'];
+        $stmt = $this->conn->prepare("
+        SELECT a.* 
+        FROM attendees a
+        INNER JOIN events e ON a.event_id = e.id
+        WHERE e.user_id = ?
+    ");
+
+        if (!$stmt) {
+            return false; // Return false if the query failed to prepare
+        }
+
+        // Bind the user_id parameter
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        // Fetch all attendees as an associative array
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // get attendees for an event
-    public function getAttendees($eventId){
+    public function getAttendees($eventId)
+    {
         $stmt = $this->conn->prepare("SELECT * FROM attendees WHERE event_id = ?");
-        if(!$stmt) {
+        if (!$stmt) {
             return false;
         }
         $stmt->bind_param("s", $eventId);
@@ -49,7 +71,8 @@ class Attendee {
     }
 
     // Get event name from event id
-    public function getEventName($eventId) {
+    public function getEventName($eventId)
+    {
         $stmt = $this->conn->prepare("SELECT name FROM events WHERE id = ?");
         $stmt->bind_param("s", $eventId);
         $stmt->execute();
@@ -59,7 +82,8 @@ class Attendee {
     }
 
     // total attendees
-    public function totalAttendees() {
+    public function totalAttendees()
+    {
         $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM attendees");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -67,7 +91,17 @@ class Attendee {
         return $row['total'];
     }
 
+    // check if the logged in user is the owner of the event
+    public function checkEventOwner($eventId)
+    {
+        $userId = $_SESSION['user_id'];
+        $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $eventId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            return true;
+        }
+        return false;
+    }
 }
-
-
-?>

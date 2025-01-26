@@ -1,11 +1,12 @@
 <?php 
-
-include('PublicEvents.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 class PublicAttendee extends PublicEvents {
     private $conn;
     public function __construct($db) {
         $this->conn = $db->getConnection();
+        Parent::__construct($db);
     }
 
     public function createAttendee($eventId, $name, $email) {
@@ -49,6 +50,8 @@ class PublicAttendee extends PublicEvents {
         }
         return false;
     }
+
 }
+
 
 ?>

@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-Type: application/json");
 // error_reporting(E_ALL);
 // ini_set('display_errors', 1);
@@ -8,7 +9,7 @@ require_once __DIR__ . '/../classes/Database.php';
 require_once __DIR__ . '/../classes/User.php';
 require_once __DIR__ . '/../classes/Attendee.php';
 require_once __DIR__ . '/../classes/BaseEvent.php';
-// require_once __DIR__ . '/../classes/PublicEvents.php';
+require_once __DIR__ . '/../classes/PublicEvents.php';
 require_once __DIR__ . '/../classes/PrivateEvent.php';
 require_once __DIR__ . '/../classes/PublicAttendee.php';
 
@@ -159,7 +160,7 @@ switch ($endpoint) {
 
     case 'event/create':
         if ($requestMethod === 'POST') {
-            echo "hi";
+            // echo "hi";
             $event = new PrivateEvent($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
@@ -276,6 +277,7 @@ switch ($endpoint) {
 
             $data = json_decode(file_get_contents('php://input'), true);
             $eventId = htmlspecialchars($data['eventId']);
+            // echo $eventId;exit();
             $name = htmlspecialchars($data['name']);
             $email = htmlspecialchars($data['email']);
 

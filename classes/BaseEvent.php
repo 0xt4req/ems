@@ -1,4 +1,5 @@
 <?php
+
 class BaseEvent
 {
     private $conn;
@@ -6,6 +7,7 @@ class BaseEvent
     public function __construct($db)
     {
         $this->conn = $db->getConnection();
+
     }
 
     // Create a new event
@@ -24,10 +26,19 @@ class BaseEvent
 
     // Get all events
     public function getAll() {
-        $stmt = $this->conn->prepare("SELECT * FROM events");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        if (isset($_SESSION['user_id'])) {
+            $stmt = $this->conn->prepare("SELECT * FROM events WHERE user_id = ?");
+            $stmt->bind_param("i", $_SESSION['user_id']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }else {
+            $stmt = $this->conn->prepare("SELECT * FROM events");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
+        
     }
 
     // Delete an event
