@@ -1,4 +1,5 @@
 <?php include('header.php'); ?>
+
 <body>
     <!-- Body Section with Event Cards -->
     <div class="container mt-5">
@@ -36,7 +37,7 @@
     <!-- Bootstrap 5 JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const eventCardsContainer = document.getElementById('event-cards');
             const registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
             let currentEventId = null;
@@ -50,6 +51,18 @@
 
                     // Loop through the events and create cards
                     data.forEach(event => {
+                        // Split the time string
+                        const [hours, minutes, seconds] = event.time.split(":").map(Number);
+
+                        // Determine AM/PM
+                        const ampm = hours >= 12 ? "PM" : "AM";
+
+                        // Convert hours to 12-hour format
+                        const formattedHours = hours % 12 || 12; // Adjust for 12-hour clock (0 becomes 12)
+
+                        // Format time
+                        const formattedTime = `${formattedHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
                         const card = `
                             <div class="col">
                                 <div class="card event-card h-100">
@@ -57,6 +70,7 @@
                                         <h3 class="card-title">${event.name}</h3>
                                         <p class="card-text">${event.description}</p>
                                         <p><strong>Date:</strong> ${event.date}</p>
+                                        <p><strong>Time:</strong> ${formattedTime}</p>
                                         <p><strong>Location:</strong> ${event.location}</p>
                                         <button class="btn btn-primary register-btn" data-event-id="${event.id}">Register</button>
                                     </div>
@@ -68,7 +82,7 @@
 
                     // Attach click event to Register buttons
                     document.querySelectorAll('.register-btn').forEach(button => {
-                        button.addEventListener('click', function () {
+                        button.addEventListener('click', function() {
                             currentEventId = this.getAttribute('data-event-id');
                             registrationModal.show();
                         });
@@ -79,7 +93,7 @@
                 });
 
             // Handle form submission
-            document.getElementById('registrationForm').addEventListener('submit', function (e) {
+            document.getElementById('registrationForm').addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 const registrationData = {
@@ -90,26 +104,26 @@
 
                 // Send registration data to the server in JSON format
                 fetch('/ems/api/attendees/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(registrationData)
-                })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(registrationData)
+                    })
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
                         if (data.success) {
                             Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: data.message
+                                icon: 'success',
+                                title: 'Success',
+                                text: data.message
                             });
-                        }else{
+                        } else {
                             Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.message
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
                             });
                         }
                         registrationModal.hide();

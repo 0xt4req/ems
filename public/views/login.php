@@ -157,7 +157,7 @@
                     title: 'Success',
                     text: data.message
                 }).then(() => {
-                    window.location.href = 'user/dashboard.php'; // Redirect to user dashboard page
+                    window.location.href = data.location; // Redirect to user dashboard page
                 });
             } else {
                 Swal.fire({

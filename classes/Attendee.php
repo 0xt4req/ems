@@ -7,10 +7,10 @@ class Attendee
     {
         // echo $_SESSION['username'];
         if (!isset($_SESSION['username'])) {
-            http_response_code(403);
-            echo json_encode(["success" => false, "message" => "Unauthorized"]);
+            http_response_code(302);
+            header('Location: http://localhost/ems/public/views/login.php');
+            // echo json_encode(["success" => false, "message" => "Unauthorized"]);
             exit;
-            // or we can redirect to login page
         }
         $this->conn = $db->getConnection();
     }
@@ -37,23 +37,14 @@ class Attendee
     {
         // echo $_SESSION['user_id'];exit;
         $userId = $_SESSION['user_id'];
-        $stmt = $this->conn->prepare("
-        SELECT a.* 
-        FROM attendees a
-        INNER JOIN events e ON a.event_id = e.id
-        WHERE e.user_id = ?
-    ");
-
+        $stmt = $this->conn->prepare("SELECT * FROM attendees WHERE event_id IN (SELECT id FROM events WHERE user_id = ?)");
         if (!$stmt) {
-            return false; // Return false if the query failed to prepare
+            return false;
         }
-
-        // Bind the user_id parameter
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        // Fetch all attendees as an associative array
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 

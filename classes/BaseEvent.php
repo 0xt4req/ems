@@ -7,7 +7,6 @@ class BaseEvent
     public function __construct($db)
     {
         $this->conn = $db->getConnection();
-
     }
 
     // Create a new event
@@ -25,20 +24,36 @@ class BaseEvent
     }
 
     // Get all events
-    public function getAll() {
-        if (isset($_SESSION['user_id'])) {
-            $stmt = $this->conn->prepare("SELECT * FROM events WHERE user_id = ?");
-            $stmt->bind_param("i", $_SESSION['user_id']);
+    public function getAll()
+    {
+        if (isset($_SESSION['username'])) {
+            $userId = $_SESSION['user_id'];
+            
+            $stmt = $this->conn->prepare("
+            SELECT 
+                events.id AS id, 
+                events.name AS name, 
+                events.description, 
+                events.date, 
+                events.time, 
+                events.location, 
+                events.max_capacity,
+                users.username 
+            FROM events 
+            JOIN users ON events.user_id = users.id 
+            WHERE events.user_id = ? 
+            AND users.username = ?
+        ");
+            $stmt->bind_param("is",$userId, $_SESSION['username']);
             $stmt->execute();
             $result = $stmt->get_result();
             return $result->fetch_all(MYSQLI_ASSOC);
-        }else {
+        } else {
             $stmt = $this->conn->prepare("SELECT * FROM events");
             $stmt->execute();
             $result = $stmt->get_result();
             return $result->fetch_all(MYSQLI_ASSOC);
         }
-        
     }
 
     // Delete an event

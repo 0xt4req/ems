@@ -91,7 +91,14 @@ switch ($endpoint) {
 
             // Login the user
             if ($user->login($email, $password)) {
-                echo json_encode(["success" => true, "message" => "User logged in successfully"]);
+                $baseUrl = "http://localhost/ems";
+                if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'){
+                    http_response_code(302);
+                    echo json_encode(["success" => true, "message" => "Admin logged in successfully", "location" => "$baseUrl/public/views/admin/dashboard.php"]);
+                    exit;
+                }
+                http_response_code(302);
+                echo json_encode(["success" => true, "message" => "User logged in successfully", "location" => "$baseUrl/public/views/user/dashboard.php"]);
                 exit;
             } else {
                 echo json_encode(["success" => false, "message" => "Invalid Email or Password"]);
@@ -198,7 +205,7 @@ switch ($endpoint) {
         $eventId = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
 
         // Check if 'id' is present in the JSON data
-        if (!isset($eventId)) {
+        if (empty($eventId)) {
             http_response_code(400); // Bad Request
             echo json_encode(["success" => false, "message" => "Event ID is required"]);
             exit;

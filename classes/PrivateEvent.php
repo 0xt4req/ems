@@ -4,8 +4,9 @@ class PrivateEvent extends BaseEvent
     public function __construct($db)
     {
         if (!isset($_SESSION['username'])) {
-            http_response_code(403);
-            echo json_encode(["success" => false, "message" => "Unauthorized"]);
+            http_response_code(302);
+            header('Location: http://localhost/ems/public/views/login.php');
+            // echo json_encode(["success" => false, "message" => "Unauthorized"]);
             exit;
         }
         parent::__construct($db);

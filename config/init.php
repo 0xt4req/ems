@@ -14,7 +14,7 @@ if ($conn->connect_error) {
 }
 
 // Drop the database if it exists
-$dropDatabaseQuery = "DROP DATABASE IF EXISTS $dbname";
+$dropDatabaseQuery = "DROP DATABASE IF EXISTS `$dbname`";
 if ($conn->query($dropDatabaseQuery) === TRUE) {
     echo "Database dropped successfully!\n";
 } else {
@@ -22,7 +22,7 @@ if ($conn->query($dropDatabaseQuery) === TRUE) {
 }
 
 // Create the database
-$createDatabaseQuery = "CREATE DATABASE $dbname";
+$createDatabaseQuery = "CREATE DATABASE `$dbname`";
 if ($conn->query($createDatabaseQuery) === TRUE) {
     echo "Database created successfully!\n";
 } else {
@@ -36,7 +36,7 @@ $conn->select_db($dbname);
 $sql = "
     CREATE TABLE users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        uuid VARCHAR(100) NOT NULL,
+        uuid VARCHAR(36) NOT NULL,
         username VARCHAR(100) NOT NULL UNIQUE,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
@@ -47,7 +47,7 @@ $sql = "
 
     CREATE TABLE events (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        uuid VARCHAR(100) NOT NULL,
+        uuid VARCHAR(36) NOT NULL,
         user_id INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         description TEXT,
@@ -61,7 +61,7 @@ $sql = "
 
     CREATE TABLE attendees (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        uuid VARCHAR(100) NOT NULL,
+        uuid VARCHAR(36) NOT NULL,
         event_id INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL,
@@ -71,7 +71,7 @@ $sql = "
 
     CREATE TABLE admins (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        uuid VARCHAR(100) NOT NULL,
+        uuid VARCHAR(36) NOT NULL,
         username VARCHAR(100) NOT NULL UNIQUE,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
@@ -82,12 +82,33 @@ $sql = "
 ";
 
 // Execute the SQL statements
-if ($conn->multi_query($sql) === TRUE) {
+if ($conn->multi_query($sql)) {
+    do {
+        // Loop through the results to ensure all queries execute
+        if ($result = $conn->store_result()) {
+            $result->free();
+        }
+    } while ($conn->next_result());
     echo "Tables created successfully!\n";
 } else {
-    echo "Error creating tables: " . $conn->error;
+    die("Error creating tables: " . $conn->error);
+}
+
+// Create the admin user (after tables are created)
+$uuid = bin2hex(random_bytes(16)); // Generate a 16-byte (32-char) UUID
+$adminUsername = 'admin';
+$adminName = 'Admin';
+$adminEmail = 'admin@example.com';
+$adminPassword = password_hash('password', PASSWORD_BCRYPT);
+
+$stmt = $conn->prepare("INSERT INTO admins (uuid, username, name, email, password) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssss", $uuid, $adminUsername, $adminName, $adminEmail, $adminPassword);
+
+if ($stmt->execute()) {
+    echo "Admin user created successfully!\n";
+} else {
+    echo "Error creating admin user: " . $stmt->error;
 }
 
 // Close the connection
 $conn->close();
-?>
