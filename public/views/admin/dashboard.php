@@ -6,7 +6,6 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -153,6 +152,26 @@ if (!isset($_SESSION['username'])) {
                 </tbody>
             </table>
         </div>
+
+        <!-- Users Details -->
+        <div>
+            <h2>Users</h2>
+            <table id="usersTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Add Event Modal -->
@@ -261,13 +280,12 @@ if (!isset($_SESSION['username'])) {
                         data: null,
                         render: function(data) {
                             return `
-                <button class="btn btn-info btn-sm view-btn" data-id="${data.id}" data-description="${data.description}"><i class="fas fa-eye"></i> View Details</button>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>
-              `;
+                                <button class="btn btn-info btn-sm view-btn" data-id="${data.id}" data-description="${data.description}"><i class="fas fa-eye"></i> View Details</button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>
+                            `;
                         }
                     }
                 ]
-
             });
 
             // Fetch events and populate the table
@@ -286,62 +304,6 @@ if (!isset($_SESSION['username'])) {
                 });
             }
 
-            // Open Add Event Modal
-            $('#addEventBtn').click(function() {
-                $('#addEventModal').modal('show');
-            });
-
-            // Save Event
-            $('#saveEventBtn').click(function() {
-                var eventName = $('#eventName').val();
-                var description = $('#description').val();
-                var location = $('#eventLocation').val();
-                var time = $('#eventTime').val();
-                var maxCapacity = $('#maxCapacity').val();
-                var eventDate = $('#eventDate').val();
-
-                if (eventName && eventDate) {
-                    // Create an object with the event data
-                    var eventData = {
-                        name: eventName,
-                        description: description,
-                        date: eventDate,
-                        time: time,
-                        location: location,
-                        max_capacity: maxCapacity
-                    };
-
-                    $.ajax({
-                        url: '/ems/api/event/create', // Endpoint to add event
-                        method: 'POST',
-                        contentType: 'application/json', // Set the content type to JSON
-                        data: JSON.stringify(eventData), // Convert the data to JSON format
-                        success: function(response) {
-                            $('#addEventModal').modal('hide');
-                            if (response['succes'] === false) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response['message']
-                                });
-                                return;
-                            } else {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response['message']
-                                });
-                            }
-                            fetchEvents(); // Refresh the table after adding an event
-                            $('#eventForm')[0].reset(); // Reset form
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error adding event:', error);
-                        }
-                    });
-                }
-            });
-
             // Delete Event
             $('#eventsTable').on('click', '.delete-btn', function() {
                 var eventId = $(this).data('id');
@@ -357,7 +319,7 @@ if (!isset($_SESSION['username'])) {
                 }).then((result) => {
                     if (result.isConfirmed) { // Check if the user confirmed the action
                         $.ajax({
-                            url: '/ems/api/event/delete', // Endpoint to delete event
+                            url: '/ems/api/admin/event/delete', // Endpoint to delete event
                             method: 'DELETE',
                             contentType: 'application/json', // Set content type to JSON
                             data: JSON.stringify({
@@ -456,7 +418,7 @@ if (!isset($_SESSION['username'])) {
                 }).then((result) => {
                     if (result.isConfirmed) { // Check if the user confirmed the action
                         $.ajax({
-                            url: '/ems/api/attendees/delete', // Endpoint to delete attendee
+                            url: '/ems/api/admin/attendee/delete', // Endpoint to delete attendee
                             method: 'DELETE',
                             contentType: 'application/json', // Set content type to JSON
                             data: JSON.stringify({
@@ -512,6 +474,95 @@ if (!isset($_SESSION['username'])) {
                 });
             }
 
+            // Initialize DataTable for users
+            var usersTable = $('#usersTable').DataTable({
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                layout: {
+                    topStart: 'buttons'
+                },
+                columns: [{
+                        data: 'id'
+                    },
+                    {
+                        data: 'username'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'role'
+                    },
+                    {
+                        data: null,
+                        render: function(data) {
+                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Fetch users and populate the table
+            function fetchUsers() {
+                $.ajax({
+                    url: '/ems/api/admin/users', // Endpoint to fetch users
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        // Clear the table and re-populate it with new data
+                        usersTable.clear();
+                        usersTable.rows.add(response).draw();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching users:', error);
+                    }
+                });
+            }
+
+            // Delete User
+            $('#usersTable').on('click', '.delete-btn', function() {
+                var userId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) { // Check if the user confirmed the action
+                        $.ajax({
+                            url: '/ems/api/admin/user/delete', // Endpoint to delete user
+                            method: 'DELETE',
+                            contentType: 'application/json', // Set content type to JSON
+                            data: JSON.stringify({
+                                id: userId
+                            }), // Send data as JSON
+                            success: function(response) {
+                                fetchUsers(); // Refresh the table after deletion
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'User has been deleted.'
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error deleting user:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to delete user.'
+                                });
+                            }
+                        });
+                    }    
+                }); 
+            });
+
             // Fetch events on page load
             fetchEvents();
 
@@ -520,6 +571,7 @@ if (!isset($_SESSION['username'])) {
 
             fetchTotalEvents();
             fetchTotalAttendees();
+            fetchUsers();
 
             
         });

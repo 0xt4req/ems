@@ -56,6 +56,18 @@ class BaseEvent
         }
     }
 
+    // update an event
+    public function update($eventId, $name, $description, $date, $time, $location, $maxCapacity)
+    {
+        $stmt = $this->conn->prepare("UPDATE events SET name = ?, description = ?, date = ?, time = ?, location = ?, max_capacity = ? WHERE id = ?");
+        $stmt->bind_param("ssssssi", $name, $description, $date, $time, $location, $maxCapacity, $eventId);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
     // Delete an event
     public function delete($eventId)
     {

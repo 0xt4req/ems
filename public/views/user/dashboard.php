@@ -24,52 +24,66 @@ if (!isset($_SESSION['username'])) {
         body {
             background-color: #f8f9fa;
         }
+
         .navbar {
             background-color: #343a40 !important;
         }
-        .navbar-brand, .nav-link {
+
+        .navbar-brand,
+        .nav-link {
             color: #ffffff !important;
         }
+
         .card {
             background-color: #ffffff;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .card-title {
             color: #343a40;
         }
+
         .card-text {
             color: #6c757d;
         }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
         }
+
         .btn-danger {
             background-color: #dc3545;
             border: none;
         }
+
         .btn-info {
             background-color: #17a2b8;
             border: none;
         }
+
         .btn-secondary {
             background-color: #6c757d;
             border: none;
         }
+
         .modal-content {
             border-radius: 10px;
         }
+
         .modal-header {
             background-color: #343a40;
             color: #ffffff;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
+
         .modal-title {
             color: #ffffff;
         }
+
         .btn-close {
             color: #ffffff;
         }
@@ -127,6 +141,7 @@ if (!isset($_SESSION['username'])) {
                         <th>Event Date</th>
                         <th>Location</th>
                         <th>Time</th>
+                        <th>Max Capacity</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -223,6 +238,56 @@ if (!isset($_SESSION['username'])) {
         </div>
     </div>
 
+    <!-- Update Event Modal -->
+    <div class="modal fade" id="updateEventModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateEventForm">
+                        <input type="hidden" id="editEventId" name="id"> <!-- Hidden field for event ID -->
+                        <div class="form-group">
+                            <label for="editEventName">Event Name</label>
+                            <input type="text" class="form-control" id="editEventName" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDescription">Event Description</label>
+                            <textarea name="description" id="editDescription" class="form-control"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEventDate">Event Date</label>
+                            <input type="date" class="form-control" id="editEventDate" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEventTime">Event Time</label>
+                            <input type="time" class="form-control" id="editEventTime" name="time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEventLocation">Event Location</label>
+                            <input type="text" class="form-control" id="editEventLocation" name="location" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editMaxCapacity">Max Capacity</label>
+                            <input type="number" class="form-control" id="editMaxCapacity" name="maxCapacity" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="updateEventBtn">Update Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
@@ -258,11 +323,15 @@ if (!isset($_SESSION['username'])) {
                         data: 'time'
                     },
                     {
+                        data: 'max_capacity'
+                    },
+                    {
                         data: null,
                         render: function(data) {
                             return `
-                <button class="btn btn-info btn-sm view-btn" data-id="${data.id}" data-description="${data.description}"><i class="fas fa-eye"></i> View Details</button>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-info btn-sm view-btn" data-id="${data.id}" data-description="${data.description}"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-success btn-sm edit-btn" data-id="${data.id}"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i></button>
               `;
                         }
                     }
@@ -391,6 +460,81 @@ if (!isset($_SESSION['username'])) {
                 $('#viewDescriptionModal').modal('show'); // Show the modal
             });
 
+            // Edit event details & get the data from the event table
+            $('#eventsTable').on('click', '.edit-btn', function() {
+                var row = $(this).closest('tr');
+                var data = table.row(row).data(); // Get the row data
+
+                // Populate the update modal fields
+                $('#editEventId').val(data.id || '');
+                $('#editEventName').val(data.name || '');
+                $('#editDescription').val(data.description || '');
+                $('#editEventDate').val(data.date || '');
+                $('#editEventTime').val(data.time || '');
+                $('#editEventLocation').val(data.location || '');
+                $('#editMaxCapacity').val(data.max_capacity || ''); // Ensure correct field name
+
+                $('#updateEventModal').modal('show'); // Show the update modal
+            });
+
+            // Update Event
+            // Update Event
+            $('#updateEventBtn').click(function() {
+                var eventId = $('#editEventId').val();
+                var eventName = $('#editEventName').val();
+                var description = $('#editDescription').val();
+                var eventDate = $('#editEventDate').val();
+                var time = $('#editEventTime').val();
+                var location = $('#editEventLocation').val();
+                var maxCapacity = $('#editMaxCapacity').val();
+
+                if (eventName && eventDate) {
+                    // Create an object with the updated event data
+                    var eventData = {
+                        id: eventId,
+                        name: eventName,
+                        description: description,
+                        date: eventDate,
+                        time: time,
+                        location: location,
+                        max_capacity: maxCapacity
+                    };
+
+                    $.ajax({
+                        url: '/ems/api/event/update', // Endpoint to update event
+                        method: 'PUT',
+                        contentType: 'application/json', // Set the content type to JSON
+                        data: JSON.stringify(eventData), // Convert the data to JSON format
+                        success: function(response) {
+                            $('#updateEventModal').modal('hide');
+                            if (response['success'] === false) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response['message']
+                                });
+                                return;
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response['message']
+                                });
+                            }
+                            fetchEvents(); // Refresh the table after updating
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error updating event:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to update event.'
+                            });
+                        }
+                    });
+                }
+            });
+
             // Initialize DataTable for attendees
             var attendeesTable = $('#attendeesTable').DataTable({
                 buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -479,7 +623,7 @@ if (!isset($_SESSION['username'])) {
                                 });
                             }
                         });
-                    }    
+                    }
                 });
             });
 
@@ -521,7 +665,7 @@ if (!isset($_SESSION['username'])) {
             fetchTotalEvents();
             fetchTotalAttendees();
 
-            
+
         });
     </script>
 </body>

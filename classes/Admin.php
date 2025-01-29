@@ -29,7 +29,7 @@ class Admin {
 
     // get all users
     public function getAllUsers() {
-        $stmt = $this->conn->prepare("SELECT * FROM users");
+        $stmt = $this->conn->prepare("SELECT id, username, name, email, role FROM users");
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
@@ -40,14 +40,9 @@ class Admin {
         $stmt = $this->conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("s", $userId);
         $stmt->execute();
-        return true;
-    }
-
-    // update user
-    public function updateUser($userId, $username, $name, $email) {
-        $stmt = $this->conn->prepare("UPDATE users SET username = ?, name = ?, email = ? WHERE id = ?");
-        $stmt->bind_param("ssss", $username, $name, $email, $userId);
-        $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
         return true;
     }
 
@@ -64,6 +59,9 @@ class Admin {
         $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ?");
         $stmt->bind_param("s", $eventId);
         $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
         return true;
     }
 
@@ -73,6 +71,17 @@ class Admin {
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // delete attendee
+    public function deleteAttendee($attendeeId) {
+        $stmt = $this->conn->prepare("DELETE FROM attendees WHERE id = ?");
+        $stmt->bind_param("s", $attendeeId);
+        $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
+        return true;
     }
 }
 

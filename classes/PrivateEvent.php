@@ -22,6 +22,11 @@ class PrivateEvent extends BaseEvent
         return parent::getAll();
     }
 
+    public function update($eventId, $name, $description, $date, $time, $location, $maxCapacity)
+    {
+        return parent::update($eventId, $name, $description, $date, $time, $location, $maxCapacity);
+    }
+
     public function delete($eventId)
     {
         return parent::delete($eventId);
