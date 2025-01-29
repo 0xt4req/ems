@@ -273,7 +273,7 @@ if (!isset($_SESSION['username'])) {
             // Fetch events and populate the table
             function fetchEvents() {
                 $.ajax({
-                    url: '/ems/api/events', // Endpoint to fetch events
+                    url: '/ems/api/admin/events', // Endpoint to fetch events
                     method: 'GET',
                     success: function(response) {
                         // Clear the table and re-populate it with new data
@@ -421,7 +421,7 @@ if (!isset($_SESSION['username'])) {
             // Fetch attendees and populate the table
             function fetchAttendees() {
                 $.ajax({
-                    url: '/ems/api/attendees', // Endpoint to fetch attendees
+                    url: '/ems/api/admin/attendees', // Endpoint to fetch attendees
                     method: 'GET',
                     success: function(response) {
                         // Clear the table and re-populate it with new data

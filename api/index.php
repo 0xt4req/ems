@@ -12,6 +12,8 @@ require_once __DIR__ . '/../classes/BaseEvent.php';
 require_once __DIR__ . '/../classes/PublicEvents.php';
 require_once __DIR__ . '/../classes/PrivateEvent.php';
 require_once __DIR__ . '/../classes/PublicAttendee.php';
+require_once __DIR__ . '/../classes/Admin.php';
+require_once __DIR__ . '/../classes/Auth.php';
 
 $db = new Database();
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -27,6 +29,8 @@ if (count($uriSegments) > 3) {
 }
 
 // echo "Endpoint: " . $endpoint . "\n";exit;
+
+$baseUrl = "http://localhost/ems";
 
 // Handle API endpoints
 switch ($endpoint) {
@@ -76,7 +80,7 @@ switch ($endpoint) {
 
     case 'login':
         if ($requestMethod === 'POST') {
-            $user = new User($db);
+            $user = new Auth($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Get the email and password from the request body
@@ -91,12 +95,6 @@ switch ($endpoint) {
 
             // Login the user
             if ($user->login($email, $password)) {
-                $baseUrl = "http://localhost/ems";
-                if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'){
-                    http_response_code(302);
-                    echo json_encode(["success" => true, "message" => "Admin logged in successfully", "location" => "$baseUrl/public/views/admin/dashboard.php"]);
-                    exit;
-                }
                 http_response_code(302);
                 echo json_encode(["success" => true, "message" => "User logged in successfully", "location" => "$baseUrl/public/views/user/dashboard.php"]);
                 exit;
@@ -111,9 +109,62 @@ switch ($endpoint) {
         }
         break;
 
+    case 'admin/login':
+        if ($requestMethod === 'POST') {
+            $admin = new Auth($db);
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            // Get the email and password from the request body
+            $email = htmlspecialchars($data['email']);
+            $password = $data['password'];
+
+            // Validate the email and password
+            if (empty($email) || empty($password)) {
+                echo json_encode(["success" => false, "message" => "All fields are required"]);
+                exit;
+            }
+
+            // Login the user
+            if ($admin->Adminlogin($email, $password)) {
+                $baseUrl = "http://localhost/ems";
+                http_response_code(302);
+                echo json_encode(["success" => true, "message" => "Admin logged in successfully", "location" => "$baseUrl/public/views/admin/dashboard.php"]);
+                exit;
+            } else {
+                echo json_encode(["success" => false, "message" => "Invalid Email or Password"]);
+                exit;
+            }
+            
+        }else{
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+            exit;
+        }
+        break;
+
+    case 'admin/events':
+        $event = new Admin($db);
+        if ($requestMethod === 'GET') {
+            echo json_encode($event->getAllEvents());
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+        }
+        break;
+
+    case 'admin/attendees':
+        $attendee = new Admin($db);
+        if ($requestMethod === 'GET') {
+            echo json_encode($attendee->getAllAttendees());
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+        }
+        break;
+
     case 'logout':
         if ($requestMethod === 'POST') {
-            $user = new User($db);
+            $user = new Auth($db);
             if ($user->logout()) {
                 http_response_code(302);
                 header('Location: http://localhost/ems/public/views/login.php');

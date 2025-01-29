@@ -22,37 +22,6 @@ class User
         return false;
     }
 
-    // Login a user
-    public function login($email, $password)
-    {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ? UNION SELECT * FROM admins WHERE email = ?");
-        $stmt->bind_param("ss", $email, $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['user_role'] = $user['role'];
-
-                session_regenerate_id(true);
-
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Logout a user
-    public function logout()
-    {
-        session_destroy();
-        return true;
-    }
-
     // Check if a username already exists
     public function checkUsernameExists($username)
     {
