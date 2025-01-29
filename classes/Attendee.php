@@ -37,7 +37,18 @@ class Attendee
     {
         // echo $_SESSION['user_id'];exit;
         $userId = $_SESSION['user_id'];
-        $stmt = $this->conn->prepare("SELECT * FROM attendees WHERE event_id IN (SELECT id FROM events WHERE user_id = ?)");
+        $stmt = $this->conn->prepare("
+            SELECT 
+            attendees.id AS attendee_id, 
+            attendees.name AS attendee_name, 
+            attendees.email, 
+            attendees.event_id, 
+            events.name AS event_name
+            FROM attendees
+            JOIN events ON attendees.event_id = events.id
+            WHERE events.user_id = ?
+        ");
+
         if (!$stmt) {
             return false;
         }
@@ -61,6 +72,18 @@ class Attendee
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    // delete an attendee
+    public function deleteAttendee($attendeeId)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM attendees WHERE id = ?");
+        $stmt->bind_param("s", $attendeeId);
+        $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
+        return true;
+    }
+
     // Get event name from event id
     public function getEventName($eventId)
     {
@@ -80,19 +103,5 @@ class Attendee
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         return $row['total'];
-    }
-
-    // check if the logged in user is the owner of the event
-    public function checkEventOwner($eventId)
-    {
-        $userId = $_SESSION['user_id'];
-        $stmt = $this->conn->prepare("SELECT id FROM events WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $eventId, $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            return true;
-        }
-        return false;
     }
 }

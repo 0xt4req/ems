@@ -120,6 +120,11 @@ switch ($endpoint) {
         $attendees->attendees($requestMethod, $db);
         break;
 
+    case 'attendee/delete':
+        $deleteAttendees = new EventApi();
+        $deleteAttendees->deleteAttendee($requestMethod, $db);
+        break;
+
     case 'totalAttendees':
         $totalAttendees = new EventApi();
         $totalAttendees->totalAttendees($requestMethod, $db);

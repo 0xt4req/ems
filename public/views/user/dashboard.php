@@ -434,6 +434,7 @@ if (!isset($_SESSION['username'])) {
                             }), // Send data as JSON
                             success: function(response) {
                                 fetchEvents(); // Refresh the table after deletion
+                                fetchAttendees();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',
@@ -477,7 +478,6 @@ if (!isset($_SESSION['username'])) {
                 $('#updateEventModal').modal('show'); // Show the update modal
             });
 
-            // Update Event
             // Update Event
             $('#updateEventBtn').click(function() {
                 var eventId = $('#editEventId').val();
@@ -542,10 +542,10 @@ if (!isset($_SESSION['username'])) {
                     topStart: 'buttons'
                 },
                 columns: [{
-                        data: 'id'
+                        data: 'attendee_id'
                     },
                     {
-                        data: 'name'
+                        data: 'attendee_name'
                     },
                     {
                         data: 'email'
@@ -556,7 +556,7 @@ if (!isset($_SESSION['username'])) {
                     {
                         data: null,
                         render: function(data) {
-                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>`;
+                            return `<button class="btn btn-danger btn-sm delete-btn" data-attendee-id="${data.attendee_id}" data-event-id="${data.event_id}"><i class="fas fa-trash"></i> Delete</button>`;
                         }
                     }
                 ]
@@ -568,6 +568,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/attendees', // Endpoint to fetch attendees
                     method: 'GET',
                     success: function(response) {
+                        console.log(response);
                         // Clear the table and re-populate it with new data
                         attendeesTable.clear();
                         attendeesTable.rows.add(response).draw();
@@ -587,8 +588,11 @@ if (!isset($_SESSION['username'])) {
 
             // Delete Attendee
             $('#attendeesTable').on('click', '.delete-btn', function() {
-                var attendeeId = $(this).data('id');
+                // Retrieve event_id and attendee_id from the button's data attributes
+                var attendeeId = $(this).data('attendee-id');
+                var eventId = $(this).data('event-id');
 
+                // Confirm deletion with the user
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -598,16 +602,19 @@ if (!isset($_SESSION['username'])) {
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
-                    if (result.isConfirmed) { // Check if the user confirmed the action
+                    if (result.isConfirmed) {
+                        // Send the delete request to the server
                         $.ajax({
-                            url: '/ems/api/attendees/delete', // Endpoint to delete attendee
+                            url: '/ems/api/attendee/delete', // Endpoint to delete attendee
                             method: 'DELETE',
-                            contentType: 'application/json', // Set content type to JSON
+                            contentType: 'application/json',
                             data: JSON.stringify({
-                                id: attendeeId
-                            }), // Send data as JSON
+                                attendeeId: attendeeId,
+                                eventId: eventId
+                            }),
                             success: function(response) {
-                                fetchAttendees(); // Refresh the table after deletion
+                                // Refresh the table after deletion
+                                fetchAttendees();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',
@@ -633,7 +640,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/totalEvents', // Endpoint to fetch total events
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         $('#totalEvents').text(response);
                     },
                     error: function(xhr, status, error) {
@@ -647,7 +654,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/totalAttendees', // Endpoint to fetch total attendees
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         $('#totalAttendees').text(response);
                     },
                     error: function(xhr, status, error) {

@@ -17,9 +17,9 @@ class PrivateEvent extends BaseEvent
         return parent::create($name, $description, $date, $time, $location, $maxCapacity);
     }
 
-    public function getAll()
+    public function getAllEventForUser()
     {
-        return parent::getAll();
+        return parent::getAllEventForUser();
     }
 
     public function update($eventId, $name, $description, $date, $time, $location, $maxCapacity)

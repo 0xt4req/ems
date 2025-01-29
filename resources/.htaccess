@@ -1,0 +1,7 @@
+# Allow access to specific file types
+<FilesMatch "\.(css|js|json|jpg|jpeg|png|gif|svg)$">
+    Allow from all
+</FilesMatch>
+
+# Deny access to all other files
+Deny from all

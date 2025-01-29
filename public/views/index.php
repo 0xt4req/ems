@@ -9,6 +9,21 @@
         </div>
     </div>
 
+    <!-- Bootstrap Modal for Viewing Description -->
+    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="descriptionModalLabel">Event Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="eventDescriptionContent">
+                    <!-- Description will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap Modal for Registration -->
     <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -27,7 +42,7 @@
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
                     </form>
                 </div>
             </div>
@@ -40,39 +55,29 @@
         document.addEventListener('DOMContentLoaded', function() {
             const eventCardsContainer = document.getElementById('event-cards');
             const registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
+            const descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
             let currentEventId = null;
 
             // Fetch events from the API
             fetch('/ems/api/events/public')
                 .then(response => response.json())
                 .then(data => {
-                    // console.log(data);
                     eventCardsContainer.innerHTML = ''; // Clear existing content
 
-                    // Loop through the events and create cards
                     data.forEach(event => {
-                        // Split the time string
-                        const [hours, minutes, seconds] = event.time.split(":").map(Number);
-
-                        // Determine AM/PM
-                        const ampm = hours >= 12 ? "PM" : "AM";
-
-                        // Convert hours to 12-hour format
-                        const formattedHours = hours % 12 || 12; // Adjust for 12-hour clock (0 becomes 12)
-
-                        // Format time
-                        const formattedTime = `${formattedHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+                        const formattedTime = new Date(`1970-01-01T${event.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
                         const card = `
                             <div class="col">
                                 <div class="card event-card h-100">
                                     <div class="card-body">
-                                        <h3 class="card-title">${event.name}</h3>
-                                        <p class="card-text">${event.description}</p>
-                                        <p><strong>Date:</strong> ${event.date}</p>
-                                        <p><strong>Time:</strong> ${formattedTime}</p>
-                                        <p><strong>Location:</strong> ${event.location}</p>
-                                        <button class="btn btn-primary register-btn" data-event-id="${event.id}">Register</button>
+                                        <h3 class="card-title"><i class="fas fa-calendar-alt"></i> ${event.name}</h3>
+                                        <p><strong><i class="fas fa-clock"></i> Time:</strong> ${formattedTime}</p>
+                                        <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> ${event.location}</p>
+                                        <p><strong><i class="fas fa-user"></i> Event By:</strong> ${event.username}</p>
+                                        <p><strong><i class="fas fa-users"></i> Attendees:</strong> ${event.total_attendees}/${event.max_capacity}</p>
+                                        <button class="btn btn-info view-desc-btn" data-description="${event.description}"><i class="fas fa-info-circle"></i> View Details</button><br><br>
+                                        <button class="btn btn-primary register-btn" data-event-id="${event.id}"><i class="fas fa-ticket-alt"></i> Register</button>
                                     </div>
                                 </div>
                             </div>
@@ -85,6 +90,14 @@
                         button.addEventListener('click', function() {
                             currentEventId = this.getAttribute('data-event-id');
                             registrationModal.show();
+                        });
+                    });
+
+                    // Attach click event to View Description buttons
+                    document.querySelectorAll('.view-desc-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            document.getElementById('eventDescriptionContent').innerText = this.getAttribute('data-description');
+                            descriptionModal.show();
                         });
                     });
                 })
@@ -102,7 +115,6 @@
                     email: document.getElementById('email').value,
                 };
 
-                // Send registration data to the server in JSON format
                 fetch('/ems/api/attendees/create', {
                         method: 'POST',
                         headers: {
@@ -112,7 +124,6 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
                         if (data.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -136,6 +147,7 @@
             });
         });
     </script>
+<script src="https://kit.fontawesome.com/3111411978.js" crossorigin="anonymous"></script>
 </body>
 
 <?php include('footer.php'); ?>

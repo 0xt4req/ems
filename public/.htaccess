@@ -1,0 +1,12 @@
+# Allow access to all files in this directory
+Allow from all
+
+# Enable URL rewriting (if needed)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect all requests to index.php (if using a front controller)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

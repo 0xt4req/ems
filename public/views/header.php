@@ -16,7 +16,8 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #0a192f; /* Navy blue */
+            background-color: #0a192f;
+            /* Navy blue */
             color: #ffffff;
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -30,13 +31,16 @@
             height: 100%;
             top: 0;
             left: 0;
-            z-index: -1; /* Ensure it stays in the background */
+            z-index: -1;
+            /* Ensure it stays in the background */
         }
 
         .navbar {
             z-index: 1000;
-            background-color: rgba(26, 26, 52, 0.9); /* Semi-transparent dark blue */
-            backdrop-filter: blur(10px); /* Blur effect */
+            background-color: rgba(26, 26, 52, 0.9);
+            /* Semi-transparent dark blue */
+            backdrop-filter: blur(10px);
+            /* Blur effect */
             padding: 1rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -55,7 +59,8 @@
         }
 
         .navbar-nav .nav-link:hover {
-            color: #007bff !important; /* Blue on hover */
+            color: #007bff !important;
+            /* Blue on hover */
         }
 
         .navbar-toggler {
@@ -70,7 +75,8 @@
         .content {
             position: relative;
             z-index: 1;
-            padding-top: 80px; /* Space for the fixed navbar */
+            padding-top: 80px;
+            /* Space for the fixed navbar */
         }
 
         .event-card {
@@ -87,15 +93,18 @@
         }
 
         .modal {
-            z-index: 1050; /* Ensure modal is above Particles.js */
+            z-index: 1050;
+            /* Ensure modal is above Particles.js */
         }
 
         .modal-backdrop {
-            z-index: 1040; /* Ensure backdrop is above Particles.js but below modal */
+            z-index: 1040;
+            /* Ensure backdrop is above Particles.js but below modal */
         }
 
         .modal-backdrop.fade.show {
-            background-color: rgba(0, 0, 0, 0.5); /* Ensure the backdrop is visible */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Ensure the backdrop is visible */
         }
 
         .modal-content {
@@ -135,8 +144,107 @@
         }
 
         .modal-backdrop {
-    display: none; /* This will hide the backdrop */
-}
+            display: none;
+            /* This will hide the backdrop */
+        }
+        .card {
+        background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+        border: none;
+        border-radius: 15px;
+        backdrop-filter: blur(10px); /* Blur effect */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        padding: 2px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .card-header {
+        background: transparent;
+        border-bottom: none;
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .card-header h2 {
+        color: #ffffff;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1); /* Semi-transparent input fields */
+        border: none;
+        border-radius: 5px;
+        color: #ffffff;
+        padding: 10px 15px;
+        margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2); /* Lighter background on focus */
+        box-shadow: none;
+        border: none;
+        color: #ffffff;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7); /* Placeholder text color */
+    }
+
+    .form-control.is-invalid {
+        border: 1px solid #dc3545; /* Red border for invalid inputs */
+    }
+
+    .btn-primary {
+        background: #007bff; /* Bootstrap primary blue */
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        width: 100%;
+        transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3; /* Darker blue on hover */
+    }
+
+    .form-group label {
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    .password-toggle {
+        position: relative;
+    }
+
+    .password-toggle .toggle-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .password-toggle .toggle-icon:hover {
+        color: #ffffff;
+    }
+
+    /* Animation for the card */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
     </style>
 </head>
 

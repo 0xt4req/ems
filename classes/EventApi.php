@@ -85,7 +85,7 @@ class EventApi
     {
         if ($requestMethod === 'GET') {
             $event = new PrivateEvent($db);
-            echo json_encode($event->getAll());
+            echo json_encode($event->getAllEventForUser());
         } else {
             http_response_code(405); // Method Not Allowed
             echo json_encode(["message" => "Method not allowed"]);
@@ -251,23 +251,60 @@ class EventApi
     {
         if ($requestMethod === 'GET') {
             $attendee = new Attendee($db);
-
             // Fetch all attendees
             $attendees = $attendee->getAllAttendees();
+            if ($attendees) {
+                echo json_encode($attendees);
+            } else {
+                echo json_encode(["success" => false, "message" => "No attendees found"]);
+            }
+        }
+    }
 
-            // Loop through attendees and add event names
-            $attendeesWithEventNames = [];
-            foreach ($attendees as $attendeeData) {
-                $eventId = $attendeeData['event_id'];
-                $eventName = $attendee->getEventName($eventId); // Fetch event name for each attendee
+    public function deleteAttendee($requestMethod, $db)
+    {
+        if ($requestMethod === 'DELETE') {
+            // Read and decode the JSON input
+            $data = json_decode(file_get_contents('php://input'), true);
 
-                // Combine attendee data with event name
-                $attendeeData['event_name'] = $eventName;
-                $attendeesWithEventNames[] = $attendeeData;
+            $eventId = filter_var($data['eventId'], FILTER_SANITIZE_NUMBER_INT);
+            $attendeeId = filter_var($data['attendeeId'], FILTER_SANITIZE_NUMBER_INT);
+
+            // Check if 'id' is present in the JSON data
+            if (empty($eventId) || empty($attendeeId)) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Event ID and Attendee ID are required"]);
+                exit;
             }
 
-            // Return the combined data as JSON
-            echo json_encode($attendeesWithEventNames);
+            $attendee = new Attendee($db);
+            $event = new PrivateEvent($db);
+            // Check if the event exists
+            if (!$event->checkEventExists($eventId)) {
+                http_response_code(404); // Not Found
+                echo json_encode(["success" => false, "message" => "Event does not exists"]);
+                exit;
+            }
+
+            // Check if the user is authorized to delete the event
+            if (!$event->checkEventOwner($eventId)) {
+                http_response_code(403); // Forbidden
+                echo json_encode(["success" => false, "message" => "You are not authorized to delete this event"]);
+                exit;
+            }
+
+            // Attempt to delete the event
+            if ($attendee->deleteAttendee($attendeeId)) {
+                http_response_code(200); // OK
+                echo json_encode(["success" => true, "message" => "Attendee deleted successfully"]);
+            } else {
+                http_response_code(500); // Internal Server Error
+                echo json_encode(["success" => false, "message" => "Attendee deletion failed"]);
+            }
+        }else{
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+            exit;
         }
     }
 
