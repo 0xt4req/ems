@@ -47,8 +47,11 @@ Ensure you have the following installed:
    - Run the init.php file to create the database and admin user.
    **Note**: Make sure to update the database connection details in `Database.php` under classes folder & `init.php` under config folder before running the init.php script.
 
-# Databaes design
+# Admin Details:
+- Username: admin
+- Password: password
 
+# Databaes design
 
 ![database design](https://i.ibb.co.com/ZR1JYK4Z/image.png)
 
