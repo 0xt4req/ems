@@ -10,22 +10,16 @@ class EventApi
             $user = new User($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
-            // Get the username, name, email, and password from the request body
-            try {
-                $username = htmlspecialchars($data['username']);
-                $name = htmlspecialchars($data['name']);
-                $email = htmlspecialchars($data['email']);
-                $password = $data['password'];
-            } catch (Exception $e) {
+            // Validate the username, name, email, and password
+            if (empty($data['username']) || empty($data['name']) || empty($data['email']) || empty($data['password'])) {
                 echo json_encode(["success" => false, "message" => "All fields are required"]);
                 exit;
             }
 
-            // Validate the username, name, email, and password
-            if (empty($username) || empty($name) || empty($email) || empty($password)) {
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
+            $username = htmlspecialchars($data['username']);
+            $name = htmlspecialchars($data['name']);
+            $email = htmlspecialchars($data['email']);
+            $password = htmlspecialchars($data['password']);
 
             // Check if the username already exists
             if ($user->checkUsernameExists($username)) {
@@ -60,20 +54,14 @@ class EventApi
             $user = new Auth($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
-            // Get the email and password from the request body
-            try{
-                $email = htmlspecialchars($data['email']);
-            $password = $data['password'];
-            }catch(Exception $e){
+            // Validate the email and password
+            if (empty($data['email']) || empty($data['password'])) {
                 echo json_encode(["success" => false, "message" => "All fields are required"]);
                 exit;
             }
 
-            // Validate the email and password
-            if (empty($email) || empty($password)) {
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
+            $email = htmlspecialchars($data['email']);
+            $password = htmlspecialchars($data['password']);
 
             // Login the user
             if ($user->login($email, $password)) {
@@ -131,26 +119,18 @@ class EventApi
             $event = new PrivateEvent($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
-            // print_r($data);exit();
+            if (empty($data['name']) || empty($data['description']) || empty($data['date']) || empty($data['time']) || empty($data['location']) || empty($data['max_capacity'])) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "All fields are required"]);
+                exit;
+            }
 
-            // Get the user_id, name, description, date, time, location, and max_capacity from the request body
-            try{
-                $name = htmlspecialchars($data['name']);
+            $name = htmlspecialchars($data['name']);
             $description = htmlspecialchars($data['description']);
             $date = htmlspecialchars($data['date']);
             $time = htmlspecialchars($data['time']);
             $location = htmlspecialchars($data['location']);
             $maxCapacity = htmlspecialchars($data['max_capacity']);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
-
-            // Validate the user_id, name, description, date, time, location, and max_capacity
-            if (empty($name) || empty($description) || empty($date) || empty($time) || empty($location) || empty($maxCapacity)) {
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
 
             // Create a new event
             if ($event->create($name, $description, $date, $time, $location, $maxCapacity)) {
@@ -172,19 +152,21 @@ class EventApi
         if ($requestMethod === 'PUT') {
             $event = new PrivateEvent($db);
             $data = json_decode(file_get_contents('php://input'), true);
-            // Get the event ID and new values from the request body
-            try{
-                $eventId = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
+
+            // check if the required fields are present
+            if (empty($data['id']) || empty($data['name']) || empty($data['description']) || empty($data['date']) || empty($data['time']) || empty($data['location']) || empty($data['max_capacity'])) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "All fields are required"]);
+                exit;
+            }
+
+            $eventId = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
             $name = htmlspecialchars($data['name']);
             $description = htmlspecialchars($data['description']);
             $date = htmlspecialchars($data['date']);
             $time = htmlspecialchars($data['time']);
             $location = htmlspecialchars($data['location']);
             $maxCapacity = filter_var($data['max_capacity'], FILTER_SANITIZE_NUMBER_INT);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
 
             // Validate the event ID
             if (!$event->checkEventExists($eventId)) {
@@ -228,19 +210,14 @@ class EventApi
             // Read and decode the JSON input
             $data = json_decode(file_get_contents('php://input'), true);
 
-            try{
-                $eventId = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "Event ID is required"]);
-                exit;
-            }
-
             // Check if 'id' is present in the JSON data
-            if (empty($eventId)) {
+            if (empty($data['id'])) {
                 http_response_code(400); // Bad Request
                 echo json_encode(["success" => false, "message" => "Event ID is required"]);
                 exit;
             }
+
+            $eventId = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
 
             $event = new PrivateEvent($db);
             // Check if the event exists
@@ -291,20 +268,15 @@ class EventApi
             // Read and decode the JSON input
             $data = json_decode(file_get_contents('php://input'), true);
 
-            try{
-                $eventId = filter_var($data['eventId'], FILTER_SANITIZE_NUMBER_INT);
-            $attendeeId = filter_var($data['attendeeId'], FILTER_SANITIZE_NUMBER_INT);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "Event ID and Attendee ID are required"]);
-                exit;
-            }
-
             // Check if 'id' is present in the JSON data
-            if (empty($eventId) || empty($attendeeId)) {
+            if (empty($data['eventId']) || empty($data['attendeeId'])) {
                 http_response_code(400); // Bad Request
                 echo json_encode(["success" => false, "message" => "Event ID and Attendee ID are required"]);
                 exit;
             }
+
+            $eventId = filter_var($data['eventId'], FILTER_SANITIZE_NUMBER_INT);
+            $attendeeId = filter_var($data['attendeeId'], FILTER_SANITIZE_NUMBER_INT);
 
             $attendee = new Attendee($db);
             $event = new PrivateEvent($db);
@@ -355,15 +327,17 @@ class EventApi
             $attendees = new PublicAttendee($db);
 
             $data = json_decode(file_get_contents('php://input'), true);
-            try{
-                $eventId = htmlspecialchars($data['eventId']);
+
+            // check if the required fields are present
+            if (empty($data['eventId']) || empty($data['name']) || empty($data['email'])) {
+                echo json_encode(["success" => false, "message" => "Event ID, Name and Email are required"]);
+                exit;
+            }
+
+            $eventId = htmlspecialchars($data['eventId']);
             // echo $eventId;exit();
             $name = htmlspecialchars($data['name']);
             $email = htmlspecialchars($data['email']);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
 
             // check if the event exists
             if (!$attendees->checkEventExists($eventId)) {
@@ -406,19 +380,14 @@ class EventApi
             $admin = new Auth($db);
             $data = json_decode(file_get_contents('php://input'), true);
 
-            // Get the email and password from the request body
-            try{
-                $email = htmlspecialchars($data['email']);
-            $password = $data['password'];
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-            }
-
             // Validate the email and password
-            if (empty($email) || empty($password)) {
+            if (empty($data['email']) || empty($data['password'])) {
                 echo json_encode(["success" => false, "message" => "All fields are required"]);
                 exit;
             }
+
+            $email = htmlspecialchars($data['email']);
+            $password = htmlspecialchars($data['password']);
 
             // Login the user
             if ($admin->Adminlogin($email, $password)) {
@@ -457,22 +426,17 @@ class EventApi
         if ($requestMethod === 'POST') {
             $admin = new Admin($db);
             $data = json_decode(file_get_contents('php://input'), true);
-            
-            try{
-                $username = htmlspecialchars($data['username']);
-            $name = htmlspecialchars($data['name']);
-            $email = htmlspecialchars($data['email']);
-            $password = $data['password'];
-            }catch(Exception $e){
+
+            // Validate the username, name, email, and password
+            if (empty($data['username']) || empty($data['name']) || empty($data['email']) || empty($data['password'])) {
                 echo json_encode(["success" => false, "message" => "All fields are required"]);
                 exit;
             }
 
-            // Validate the username, name, email, and password
-            if (empty($username) || empty($name) || empty($email) || empty($password)) {
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                exit;
-            }
+            $username = htmlspecialchars($data['username']);
+            $name = htmlspecialchars($data['name']);
+            $email = htmlspecialchars($data['email']);
+            $password = htmlspecialchars($data['password']);
 
             // check if username already exists
             if (!$admin->checkAdminUsername($username)) {
@@ -502,18 +466,15 @@ class EventApi
     {
         if ($requestMethod === 'DELETE') {
             $data = json_decode(file_get_contents('php://input'), true);
-            
-            try{
-                $adminId = htmlspecialchars($data['id']);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "Admin ID is required"]);
-                exit;
-            }
+
             // check if the adminId is empty
-            if (empty($adminId)) {
+            if (empty($data['id'])) {
                 echo json_encode(["success" => false, "message" => "Admin ID is required"]);
                 exit;
             }
+
+            $adminId = htmlspecialchars($data['id']);
+
             $admin = new Admin($db);
             if ($admin->deleteAdmin($adminId)) {
                 echo json_encode(["success" => true, "message" => "Admin deleted successfully"]);
@@ -544,13 +505,14 @@ class EventApi
     {
         if ($requestMethod === 'DELETE') {
             $data = json_decode(file_get_contents('php://input'), true);
-            
-            try{
-                $eventId = htmlspecialchars($data['id']);
-            }catch(Exception $e){
+
+            if (empty($data['id'])) {
                 echo json_encode(["success" => false, "message" => "Event ID is required"]);
                 exit;
             }
+
+            $eventId = htmlspecialchars($data['id']);
+
             // check if the eventId is empty
             if (empty($eventId)) {
                 echo json_encode(["success" => false, "message" => "Event ID is required"]);
@@ -587,18 +549,15 @@ class EventApi
     {
         if ($requestMethod === 'DELETE') {
             $data = json_decode(file_get_contents('php://input'), true);
-            
-            try{
-                $attendeeId = htmlspecialchars($data['id']);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "Attendee ID is required"]);
-                exit;
-            }
+
             // check if the eventId is empty
-            if (empty($attendeeId)) {
+            if (empty($data['id'])) {
                 echo json_encode(["success" => false, "message" => "Attendee ID is required"]);
                 exit;
             }
+
+            $attendeeId = htmlspecialchars($data['id']);
+
             $attendee = new Admin($db);
             if ($attendee->deleteAttendee($attendeeId)) {
                 echo json_encode(["success" => true, "message" => "Attendee deleted successfully"]);
@@ -629,18 +588,15 @@ class EventApi
     {
         if ($requestMethod === 'DELETE') {
             $data = json_decode(file_get_contents('php://input'), true);
-            
-            try{
-                $userId = htmlspecialchars($data['id']);
-            }catch(Exception $e){
-                echo json_encode(["success" => false, "message" => "User ID is required"]);
-                exit;
-            }
+
             // check if the eventId is empty
-            if (empty($userId)) {
+            if (empty($data['id'])) {
                 echo json_encode(["success" => false, "message" => "User ID is required"]);
                 exit;
             }
+
+            $userId = htmlspecialchars($data['id']);
+
             $user = new Admin($db);
             if ($user->deleteUser($userId)) {
                 echo json_encode(["success" => true, "message" => "User deleted successfully"]);
