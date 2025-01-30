@@ -10,7 +10,7 @@ This is a simple web-based Event Management System built with pure PHP and MySQL
 - **Attendee Registration**: Attendees can register for events, ensuring registrations do not exceed the event capacity.
 - **Event Dashboard**: Events are displayed in a paginated, sortable, and filterable format.
 - **Event Reports**: Admins & hosts can download attendee lists for specific events in CSV format.
-- **Search functionality** across events and attendees.
+- **Search functionality** across all data.
 - **AJAX integration** to enhance user experience I used ajax requests.
 - **JSON API endpoint** to fetch details programmatically.
 - **Responsive UI**: Built with Bootstrap for a modern and user-friendly interface.
