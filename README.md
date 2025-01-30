@@ -50,6 +50,7 @@ Ensure you have the following installed:
 # Admin Details:
 - Username: admin
 - Password: password
+- Endpoint: http://localhost/ems/public/views/admin
 
 # Databaes design
 
