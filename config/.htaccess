@@ -1,0 +1,7 @@
+# Deny access to all files in this directory
+Deny from all
+
+# only allow init.php file 
+<Files init.php>
+    Allow from all
+</Files>

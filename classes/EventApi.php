@@ -400,6 +400,86 @@ class EventApi
         }
     }
 
+    // Admins
+    public function admins($requestMethod, $db)
+    {
+        if ($requestMethod === 'GET') {
+            $admin = new Admin($db);
+            $admins = $admin->admins();
+            echo json_encode($admins);
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+            exit;
+        }
+    }
+
+    // create new admin
+    public function AdminCreate($requestMethod, $db)
+    {
+        if ($requestMethod === 'POST') {
+            $admin = new Admin($db);
+            $data = json_decode(file_get_contents('php://input'), true);
+            $username = htmlspecialchars($data['username']);
+            $name = htmlspecialchars($data['name']);
+            $email = htmlspecialchars($data['email']);
+            $password = $data['password'];
+
+            // Validate the username, name, email, and password
+            if (empty($username) || empty($name) || empty($email) || empty($password)) {
+                echo json_encode(["success" => false, "message" => "All fields are required"]);
+                exit;
+            }
+
+            // check if username already exists
+            if (!$admin->checkAdminUsername($username)) {
+                echo json_encode(["success" => false, "message" => "Username already exists"]);
+                exit;
+            }
+
+            // check if email already exists
+            if (!$admin->checkAdminEmail($email)) {
+                echo json_encode(["success" => false, "message" => "Email already exists"]);
+                exit;
+            }
+            
+            if ($admin->createAdmin($username, $name, $email, $password)) {
+                echo json_encode(["success" => true, "message" => "Admin created successfully"]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Admin creation failed"]);
+            }
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+        }
+    }
+
+    // Delete Admin
+    public function AdminDelete($requestMethod, $db)
+    {
+        if ($requestMethod === 'DELETE') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $adminId = htmlspecialchars($data['id']);
+            // check if the adminId is empty
+            if (empty($adminId)) {
+                echo json_encode(["success" => false, "message" => "Admin ID is required"]);
+                exit;
+            }
+            $admin = new Admin($db);
+            if ($admin->deleteAdmin($adminId)) {
+                echo json_encode(["success" => true, "message" => "Admin deleted successfully"]);
+                exit;
+            } else {
+                echo json_encode(["success" => false, "message" => "Failed to delete admin"]);
+                exit;
+            }
+        } else {
+            http_response_code(405); // Method Not Allowed
+            echo json_encode(["message" => "Method not allowed"]);
+            exit;
+        }
+    }
+
     public function AdminEvents($requestMethod, $db)
     {
         $event = new Admin($db);

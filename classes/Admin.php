@@ -18,12 +18,57 @@ class Admin {
         $this->conn = $db->getConnection();
     }
 
+    // get all admins
+    public function admins() {
+        $stmt = $this->conn->prepare("SELECT id, username, name, email, role FROM admins");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // check if username already exists
+    public function checkAdminUsername($username) {
+        $stmt = $this->conn->prepare("SELECT id FROM admins WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    // check if email already exists
+    public function checkAdminEmail($email) {
+        $stmt = $this->conn->prepare("SELECT id FROM admins WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            return false;
+        }
+        return true;
+    }
+
     // add admin
-    public function insert($username, $name, $email, $password) {
+    public function createAdmin($username, $name, $email, $password) {
+        // insert admin
+        $password = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $this->conn->prepare("INSERT INTO admins (uuid, username, name, email, password) VALUES (?, ?, ?, ?, ?)");
         $uuid = bin2hex(random_bytes(8));
         $stmt->bind_param("sssss", $uuid, $username, $name, $email, $password);
         $stmt->execute();
+        return true;
+    }
+
+    // delete admin
+    public function deleteAdmin($adminId) {
+        $stmt = $this->conn->prepare("DELETE FROM admins WHERE id = ?");
+        $stmt->bind_param("s", $adminId);
+        $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
         return true;
     }
 

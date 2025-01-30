@@ -23,52 +23,66 @@ if (!isset($_SESSION['username'])) {
         body {
             background-color: #f8f9fa;
         }
+
         .navbar {
             background-color: #343a40 !important;
         }
-        .navbar-brand, .nav-link {
+
+        .navbar-brand,
+        .nav-link {
             color: #ffffff !important;
         }
+
         .card {
             background-color: #ffffff;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .card-title {
             color: #343a40;
         }
+
         .card-text {
             color: #6c757d;
         }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
         }
+
         .btn-danger {
             background-color: #dc3545;
             border: none;
         }
+
         .btn-info {
             background-color: #17a2b8;
             border: none;
         }
+
         .btn-secondary {
             background-color: #6c757d;
             border: none;
         }
+
         .modal-content {
             border-radius: 10px;
         }
+
         .modal-header {
             background-color: #343a40;
             color: #ffffff;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
+
         .modal-title {
             color: #ffffff;
         }
+
         .btn-close {
             color: #ffffff;
         }
@@ -116,8 +130,48 @@ if (!isset($_SESSION['username'])) {
         </div>
         <br>
         <div>
+            <!-- Admin Details -->
+            <div>
+                <h2>Admin</h2>
+                <button id="addAdminBtn" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Add Admin</button>
+                <table id="adminsTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Users Details -->
+            <div>
+                <h2>Users</h2>
+                <table id="usersTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
             <h2>Event Details</h2>
-            <button id="addEventBtn" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Add Event</button>
             <table id="eventsTable" class="table table-bordered">
                 <thead>
                     <tr>
@@ -153,72 +207,43 @@ if (!isset($_SESSION['username'])) {
             </table>
         </div>
 
-        <!-- Users Details -->
-        <div>
-            <h2>Users</h2>
-            <table id="usersTable" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data will be populated here -->
-                </tbody>
-            </table>
-        </div>
     </div>
 
-    <!-- Add Event Modal -->
-    <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog">
+    <!-- Add Admin Modal -->
+    <div class="modal fade" id="addAdminModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Event</h5>
+                    <h5 class="modal-title">Add Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="eventForm">
                         <div class="form-group">
-                            <label for="eventName">Event Name</label>
-                            <input type="text" class="form-control" id="eventName" name="name" required>
+                            <label for="eventName">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="description">Event Description</label>
-                            <textarea name="description" id="description" class="form-control"></textarea>
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="eventDate">Event Date</label>
-                            <input type="date" class="form-control" id="eventDate" name="date" required>
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="eventTime">Event Time</label>
-                            <input type="time" class="form-control" id="eventTime" name="time" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="eventLocation">Event Location</label>
-                            <input type="text" class="form-control" id="eventLocation" name="location" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="maxCapacity">Max Capacity</label>
-                            <input type="number" class="form-control" id="maxCapacity" name="maxCapacity" required>
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
                         </div>
 
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveEventBtn">Save Event</button>
+                    <button type="button" class="btn btn-primary" id="saveAdminBtn">Add Admin</button>
                 </div>
             </div>
         </div>
@@ -441,7 +466,7 @@ if (!isset($_SESSION['username'])) {
                                 });
                             }
                         });
-                    }    
+                    }
                 });
             });
 
@@ -559,8 +584,147 @@ if (!isset($_SESSION['username'])) {
                                 });
                             }
                         });
-                    }    
-                }); 
+                    }
+                });
+            });
+
+            // Open Add Admin Modal
+            $('#addAdminBtn').click(function() {
+                $('#addAdminModal').modal('show');
+            });
+
+            // Save Admin
+            $('#saveAdminBtn').click(function() {
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var name = $('#name').val();
+                var email = $('#email').val();
+
+                $.ajax({
+                    url: '/ems/api/admin/create', // Endpoint to add admin
+                    method: 'POST',
+                    contentType: 'application/json', // Set content type to JSON
+                    data: JSON.stringify({
+                        username: username,
+                        password: password,
+                        name: name,
+                        email: email,
+                    }), // Send data as JSON
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            $('#addAdminModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding admin:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to add admin.'
+                        });
+                    }
+                });
+            });
+
+            // Initialize DataTable for Admins
+            var adminsTable = $('#adminsTable').DataTable({
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                layout: {
+                    topStart: 'buttons'
+                },
+                columns: [{
+                        data: 'id'
+                    },
+                    {
+                        data: 'username'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'role'
+                    },
+                    {
+                        data: null,
+                        render: function(data) {
+                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}"><i class="fas fa-trash"></i> Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Fetch admins and populate the table
+            function fetchAdmins() {
+                $.ajax({
+                    url: '/ems/api/admins', // Endpoint to fetch admins
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        // Clear the table and re-populate it with new data
+                        adminsTable.clear();
+                        adminsTable.rows.add(response).draw();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching admins:', error);
+                    }
+                });
+            }
+
+            // Delete Admin
+            $('#adminsTable').on('click', '.delete-btn', function() {
+                var adminId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) { // Check if the user confirmed the action
+                        $.ajax({
+                            url: '/ems/api/admin/delete', // Endpoint to delete admin
+                            method: 'DELETE',
+                            contentType: 'application/json', // Set content type to JSON
+                            data: JSON.stringify({
+                                id: adminId
+                            }), // Send data as JSON
+                            success: function(response) {
+                                fetchAdmins(); // Refresh the table after deletion
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Admin has been deleted.'
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error deleting admin:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to delete admin.'
+                                });
+                            }
+                        });
+                    }
+                });
             });
 
             // Fetch events on page load
@@ -572,8 +736,9 @@ if (!isset($_SESSION['username'])) {
             fetchTotalEvents();
             fetchTotalAttendees();
             fetchUsers();
+            fetchAdmins();
 
-            
+
         });
     </script>
 </body>

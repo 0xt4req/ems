@@ -2,7 +2,7 @@
 session_start();
 header("Content-Type: application/json");
 // error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+// ini_set('display_errors', 0);
 
 
 require_once __DIR__ . '/../classes/Database.php';
@@ -49,6 +49,21 @@ switch ($endpoint) {
     case 'admin/login':
         $adminLogin = new EventApi();
         $adminLogin->AdminLogin($requestMethod, $db, $baseUrl);
+        break;
+
+    case 'admins':
+        $admins = new EventApi();
+        $admins->admins($requestMethod, $db);
+        break;
+
+    case 'admin/create':
+        $adminCreate = new EventApi();
+        $adminCreate->AdminCreate($requestMethod, $db);
+        break;
+
+    case 'admin/delete':
+        $adminDelete = new EventApi();
+        $adminDelete->AdminDelete($requestMethod, $db);
         break;
 
     case 'admin/events':
