@@ -352,6 +352,9 @@ if (!isset($_SESSION['username'])) {
                             }), // Send data as JSON
                             success: function(response) {
                                 fetchEvents(); // Refresh the table after deletion
+                                fetchTotalEvents();
+                                fetchAttendees();
+                                fetchTotalAttendees();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',
@@ -451,6 +454,7 @@ if (!isset($_SESSION['username'])) {
                             }), // Send data as JSON
                             success: function(response) {
                                 fetchAttendees(); // Refresh the table after deletion
+                                fetchTotalAttendees();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',

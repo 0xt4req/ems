@@ -56,12 +56,27 @@ Ensure you have the following installed:
 
 ![database design](https://i.ibb.co.com/ZR1JYK4Z/image.png)
 
+**Note**: User means host.
+
+
 ## Usage
 - Access the application at http://localhost/ems/.
 - Register a new account.
 - Log in to create, update, manage events & attendees.
 - Attendees can register for events in the homepage.
 - Admins & users can donwload event lists along with the attendees.
+
+# Index Page
+
+![Index Page](https://i.ibb.co.com/ycKphBnt/image.png)
+
+# Admin Dashboard
+
+![Admin Dashboard](https://i.ibb.co.com/99Z96RRh/image.png)
+
+# Host/User Dashboard
+
+![Host Dashboard](https://i.ibb.co.com/397m3GvW/image.png)
 
 ## Security Considerations
 - Passwords are hashed before storing.

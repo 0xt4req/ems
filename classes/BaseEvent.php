@@ -136,7 +136,9 @@ class BaseEvent
     // total events
     public function totalEvents()
     {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events");
+        $userId = $_SESSION['user_id'];
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events WHERE user_id = ?");
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();

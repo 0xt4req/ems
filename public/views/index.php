@@ -59,13 +59,18 @@
             let currentEventId = null;
 
             // Fetch events from the API
-            fetch('/ems/api/events/public')
+            function fetchEvents() {
+                fetch('/ems/api/events/public')
                 .then(response => response.json())
                 .then(data => {
                     eventCardsContainer.innerHTML = ''; // Clear existing content
 
                     data.forEach(event => {
-                        const formattedTime = new Date(`1970-01-01T${event.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                        const formattedTime = new Date(`1970-01-01T${event.time}`).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        });
 
                         const card = `
                             <div class="col">
@@ -104,6 +109,7 @@
                 .catch(error => {
                     console.error('Error fetching events:', error);
                 });
+            }
 
             // Handle form submission
             document.getElementById('registrationForm').addEventListener('submit', function(e) {
@@ -130,6 +136,9 @@
                                 title: 'Success',
                                 text: data.message
                             });
+                            fetchEvents();
+                            registrationModal.hide();
+                            document.getElementById('registrationForm').reset();
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -137,17 +146,17 @@
                                 text: data.message
                             });
                         }
-                        registrationModal.hide();
-                        document.getElementById('registrationForm').reset();
+                        
                     })
                     .catch(error => {
                         alert('Registration failed. Please try again.');
                         console.error('Error:', error);
                     });
             });
+            fetchEvents();
         });
     </script>
-<script src="https://kit.fontawesome.com/3111411978.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/3111411978.js" crossorigin="anonymous"></script>
 </body>
 
 <?php include('footer.php'); ?>

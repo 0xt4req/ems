@@ -402,6 +402,7 @@ if (!isset($_SESSION['username'])) {
                                 });
                             }
                             fetchEvents(); // Refresh the table after adding an event
+                            fetchTotalEvents();
                             $('#eventForm')[0].reset(); // Reset form
                         },
                         error: function(xhr, status, error) {
@@ -435,6 +436,8 @@ if (!isset($_SESSION['username'])) {
                             success: function(response) {
                                 fetchEvents(); // Refresh the table after deletion
                                 fetchAttendees();
+                                fetchTotalAttendees();
+                                fetchTotalEvents();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',
@@ -579,13 +582,6 @@ if (!isset($_SESSION['username'])) {
                 });
             }
 
-            // View Attendee Details
-            $('#attendeesTable').on('click', '.view-btn', function() {
-                var description = $(this).data('description');
-                $('#eventDescription').text(description); // Set the description in the modal
-                $('#viewDescriptionModal').modal('show'); // Show the modal
-            });
-
             // Delete Attendee
             $('#attendeesTable').on('click', '.delete-btn', function() {
                 // Retrieve event_id and attendee_id from the button's data attributes
@@ -615,6 +611,7 @@ if (!isset($_SESSION['username'])) {
                             success: function(response) {
                                 // Refresh the table after deletion
                                 fetchAttendees();
+                                fetchTotalAttendees();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Deleted!',

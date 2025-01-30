@@ -98,10 +98,21 @@ class Attendee
     // total attendees
     public function totalAttendees()
     {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM attendees");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return $row['total'];
+        if (isset($_SESSION['user_id'])) {
+            $userId = $_SESSION['user_id'];
+            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM attendees WHERE event_id IN (SELECT id FROM events WHERE user_id = ?)");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
+        if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM attendees");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        }
     }
 }
