@@ -9,10 +9,13 @@ This is a simple web-based Event Management System built with pure PHP and MySQL
 - **Event Management**: Authenticated users can create, update, view, and delete events with details such as name and description.
 - **Attendee Registration**: Attendees can register for events, ensuring registrations do not exceed the event capacity.
 - **Event Dashboard**: Events are displayed in a paginated, sortable, and filterable format.
-- **Event Reports**: Admins can download attendee lists for specific events in CSV format.
+- **Event Reports**: Admins & hosts can download attendee lists for specific events in CSV format.
 - **Search functionality** across events and attendees.
-- **AJAX integration** to enhance user experience during event registration.
-- **JSON API endpoint** to fetch event details programmatically.
+- **AJAX integration** to enhance user experience I used ajax requests.
+- **JSON API endpoint** to fetch details programmatically.
+- **Responsive UI**: Built with Bootstrap for a modern and user-friendly interface.
+- **Error handling**: Proper error messages and status codes for better error handling.
+- **Access control**: Role-based access control (RBAC) for API calls.
 
 ### Technical Details:
 - This project is based on object-oriented PHP.
@@ -38,20 +41,21 @@ Ensure you have the following installed:
    ```
 
 2. **Set Up the Database**
+   - Make sure to start the xampp server with the Apache & MySQL modules enabled.
    - Open `Database.php` under classes folder and set the database connection details.
    - Navigate to /init.php endpoint. The database will be created alogin with an default admin user. ( Make sure to delete or change this this later for production use.)
+   - Run the init.php file to create the database and admin user.
+   **Note**: Make sure to update the database connection details in `Database.php` under classes folder & `init.php` under config folder before running the init.php script.
 
-3. **Start the Server**
-   - If using built-in PHP server:
-     ```sh
-     php -S localhost:8000
-     ```
-   - Otherwise, deploy to an Apache server.
+# Databaes design
+
+img src="https://i.ibb.co.com/ZR1JYK4Z/image.png" alt="image" width="600" height="400">
 
 ## Usage
+- Access the application at http://localhost/ems/.
 - Register a new account.
 - Log in to create, update, manage events & attendees.
-- Attendees can register for events.
+- Attendees can register for events in the homepage.
 - Admins & users can donwload event lists along with the attendees.
 
 ## Security Considerations
@@ -63,6 +67,8 @@ Ensure you have the following installed:
 ## Future Enhancements
 - Add password reset functionalities for the users & admins.
 - Add email notifications for event confirmations.
+- Implement user roles & permissions.
+- Data flow with the uuid.
 
 ## License
 This project is licensed under the MIT License.
