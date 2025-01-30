@@ -90,6 +90,7 @@ Ensure you have the following installed:
 - Implement user roles & permissions.
 - Data flow with the uuid.
 - Archive old events.
+- User Profile Section.
 
 ## License
 This project is licensed under the MIT License.

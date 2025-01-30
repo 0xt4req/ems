@@ -513,11 +513,13 @@ class EventApi
 
             $eventId = htmlspecialchars($data['id']);
 
-            // check if the eventId is empty
-            if (empty($eventId)) {
-                echo json_encode(["success" => false, "message" => "Event ID is required"]);
+            // check if event exists
+            $event = new PublicEvents($db);
+            if (!$event->checkEventExists($eventId)) {
+                echo json_encode(["success" => false, "message" => "Event does not exist"]);
                 exit;
             }
+
             $event = new Admin($db);
             if ($event->deleteEvent($eventId)) {
                 echo json_encode(["success" => true, "message" => "Event deleted successfully"]);
