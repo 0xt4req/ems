@@ -49,7 +49,8 @@ Ensure you have the following installed:
 
 # Databaes design
 
-img src="https://i.ibb.co.com/ZR1JYK4Z/image.png" alt="image" width="600" height="400">
+
+![database design](https://i.ibb.co.com/ZR1JYK4Z/image.png)
 
 ## Usage
 - Access the application at http://localhost/ems/.
