@@ -276,7 +276,7 @@ if (!isset($_SESSION['username'])) {
 
                         <div class="form-group">
                             <label for="editMaxCapacity">Max Capacity</label>
-                            <input type="number" class="form-control" id="editMaxCapacity" name="maxCapacity" required>
+                            <input type="number" class="form-control" id="editMaxCapacity" name="maxCapacity" min="1" required>
                         </div>
                     </form>
                 </div>
@@ -491,6 +491,15 @@ if (!isset($_SESSION['username'])) {
                 var location = $('#editEventLocation').val();
                 var maxCapacity = $('#editMaxCapacity').val();
 
+                if(maxCapacity <= 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Max capacity must be greater than 0'
+                    });
+                    return;
+                }
+
                 if (eventName && eventDate) {
                     // Create an object with the updated event data
                     var eventData = {
@@ -509,6 +518,7 @@ if (!isset($_SESSION['username'])) {
                         contentType: 'application/json', // Set the content type to JSON
                         data: JSON.stringify(eventData), // Convert the data to JSON format
                         success: function(response) {
+                            console.log(response);
                             $('#updateEventModal').modal('hide');
                             if (response['success'] === false) {
                                 Swal.fire({

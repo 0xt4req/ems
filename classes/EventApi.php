@@ -132,6 +132,12 @@ class EventApi
             $location = htmlspecialchars($data['location']);
             $maxCapacity = htmlspecialchars($data['max_capacity']);
 
+            if($maxCapacity <= 0){
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Max capacity must be greater than 0"]);
+                exit;
+            }
+
             // Create a new event
             if ($event->create($name, $description, $date, $time, $location, $maxCapacity)) {
                 echo json_encode(["success" => true, "message" => "Event created successfully"]);
@@ -167,6 +173,12 @@ class EventApi
             $time = htmlspecialchars($data['time']);
             $location = htmlspecialchars($data['location']);
             $maxCapacity = filter_var($data['max_capacity'], FILTER_SANITIZE_NUMBER_INT);
+
+            if($maxCapacity <= 0){
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Max capacity must be greater than 0"]);
+                exit;
+            }
 
             // Validate the event ID
             if (!$event->checkEventExists($eventId)) {

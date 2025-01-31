@@ -44,7 +44,7 @@ Ensure you have the following installed:
    - Make sure to start the xampp server with the Apache & MySQL modules enabled.
    - Open `Database.php` under classes folder and set the database connection details.
    - Navigate to /init.php endpoint. The database will be created alogin with an default admin user. ( Make sure to delete or change this this later for production use.)
-   - Run the init.php file to create the database and admin user.
+   - Run the init.php file to create the database and admin user. You can also run this file to reset the database if needed.
    **Note**: Make sure to update the database connection details in `Database.php` under classes folder & `init.php` under config folder before running the init.php script.
 
 # Admin Details:
@@ -90,7 +90,7 @@ Ensure you have the following installed:
 - Implement user roles & permissions.
 - Data flow with the uuid.
 - Archive old events.
-- User Profile Section.
+- User & Admin Profile Section.
 
 ## License
 This project is licensed under the MIT License.
