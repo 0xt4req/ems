@@ -72,7 +72,7 @@ Ensure you have the following installed:
 
 # Admin Dashboard
 
-![Admin Dashboard](https://i.ibb.co.com/99Z96RRh/image.png)
+![Admin Dashboard](https://i.ibb.co.com/DD1Cwv7R/image.png)
 
 # Host/User Dashboard
 
