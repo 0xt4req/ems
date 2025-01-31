@@ -479,9 +479,10 @@ if (!isset($_SESSION['username'])) {
                 $.ajax({
                     url: '/ems/api/totalEvents', // Endpoint to fetch total events
                     method: 'GET',
+                    dataType: 'json',
                     success: function(response) {
                         console.log(response);
-                        $('#totalEvents').text(response);
+                        $('#totalEvents').text(response.totalEvents);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching total events:', error);
@@ -493,9 +494,10 @@ if (!isset($_SESSION['username'])) {
                 $.ajax({
                     url: '/ems/api/totalAttendees', // Endpoint to fetch total attendees
                     method: 'GET',
+                    dataType: 'json',
                     success: function(response) {
                         console.log(response);
-                        $('#totalAttendees').text(response);
+                        $('#totalAttendees').text(response.totalAttendees);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching total attendees:', error);

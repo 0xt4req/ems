@@ -7,12 +7,12 @@ class Admin
 
     public function __construct($db)
     {
-        if (!isset($_SESSION['username']) && !isset($_SESSION['user_role'])) {
+        if (!isset($_SESSION['username']) && !isset($_SESSION['role'])) {
             http_response_code(302);
             header('Location: http://localhost/ems/public/views/admin');
             exit;
         }
-        if ($_SESSION['user_role'] !== 'admin') {
+        if ($_SESSION['role'] !== 'admin') {
             http_response_code(302);
             header('Location: http://localhost/ems/public/views/admin');
             exit;

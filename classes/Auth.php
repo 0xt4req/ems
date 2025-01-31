@@ -24,7 +24,7 @@ class Auth
 
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    $_SESSION['user_role'] = $user['role'];
+                    $_SESSION['role'] = $user['role'];
 
                     session_regenerate_id(true);
 
@@ -51,7 +51,7 @@ class Auth
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    $_SESSION['user_role'] = $user['role'];
+                    $_SESSION['role'] = $user['role'];
                     session_regenerate_id(true);
                     return true;
                 }
@@ -69,7 +69,7 @@ class Auth
             session_destroy();
             unset($_SESSION['user_id']);
             unset($_SESSION['username']);
-            unset($_SESSION['user_role']);
+            unset($_SESSION['role']);
             return true;
         } catch (Exception $e) {
             return false;

@@ -165,13 +165,22 @@ class BaseEvent
     public function totalEvents()
     {
         try {
-            $userId = $_SESSION['user_id'];
-            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events WHERE user_id = ?");
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $row = $result->fetch_assoc();
-            return $row['total'];
+            if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+                $userId = $_SESSION['user_id'];
+                $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events WHERE user_id = ?");
+                $stmt->bind_param("i", $userId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                return $row['total'];
+            }
+            if ($_SESSION['role'] === 'admin') {
+                $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events");
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                return $row['total'];
+            }
         } catch (Exception $e) {
             return false;
         }

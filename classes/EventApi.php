@@ -94,7 +94,7 @@ class EventApi
     {
         if ($requestMethod === 'GET') {
             $event = new PublicEvents($db);
-            echo json_encode($event->totalEvents());
+            echo json_encode(["totalEvents" => $event->totalEvents()]);
         } else {
             http_response_code(405); // Method Not Allowed
             echo json_encode(["message" => "Method not allowed"]);
@@ -326,7 +326,8 @@ class EventApi
         if ($requestMethod === 'GET') {
             $attendee = new Attendee($db);
             $totalAttendees = $attendee->totalAttendees();
-            echo json_encode($totalAttendees);
+            echo json_encode(["totalAttendees" => $totalAttendees]);
+            exit;
         } else {
             http_response_code(405); // Method Not Allowed
             echo json_encode(["message" => "Method not allowed"]);
