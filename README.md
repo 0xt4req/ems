@@ -50,6 +50,8 @@ Ensure you have the following installed:
    - Run the init.php file to create the database and admin user. You can also run this file to reset the database if needed.
    **Note**: Make sure to update the database connection details in `Database.php` under classes folder & `init.php` under config folder before running the init.php script.
 
+3. **Change the baseurl in api/index.php**
+
 # Admin Details:
 - Username: admin
 - Password: password
