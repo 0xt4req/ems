@@ -1,0 +1,3 @@
+# Deny access to the .git directory
+RewriteEngine On
+RewriteRule ^\.git - [F,L]
