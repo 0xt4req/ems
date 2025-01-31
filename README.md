@@ -3,6 +3,9 @@
 ## Overview
 This is a simple web-based Event Management System built with pure PHP and MySQL. It allows authenticated users to create, manage, and view events while enabling attendees to register for events.
 
+## API Documentation
+![API Documentation](https://documenter.getpostman.com/view/19858182/2sAYX3phTy#e006b39b-a151-4623-a427-a64e7ed432d5)
+
 ## Features
 ### Core Functionalities
 - **User Authentication**: Secure login and registration with password hashing.
