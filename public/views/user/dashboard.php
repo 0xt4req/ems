@@ -518,7 +518,7 @@ if (!isset($_SESSION['username'])) {
                         contentType: 'application/json', // Set the content type to JSON
                         data: JSON.stringify(eventData), // Convert the data to JSON format
                         success: function(response) {
-                            console.log(response);
+                            // console.log(response);
                             $('#updateEventModal').modal('hide');
                             if (response['success'] === false) {
                                 Swal.fire({
@@ -581,7 +581,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/attendees', // Endpoint to fetch attendees
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         // Clear the table and re-populate it with new data
                         attendeesTable.clear();
                         attendeesTable.rows.add(response).draw();

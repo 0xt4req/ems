@@ -481,7 +481,7 @@ if (!isset($_SESSION['username'])) {
                     method: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         $('#totalEvents').text(response.totalEvents);
                     },
                     error: function(xhr, status, error) {
@@ -496,7 +496,7 @@ if (!isset($_SESSION['username'])) {
                     method: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         $('#totalAttendees').text(response.totalAttendees);
                     },
                     error: function(xhr, status, error) {
@@ -541,7 +541,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/admin/users', // Endpoint to fetch users
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         // Clear the table and re-populate it with new data
                         usersTable.clear();
                         usersTable.rows.add(response).draw();
@@ -617,7 +617,7 @@ if (!isset($_SESSION['username'])) {
                         email: email,
                     }), // Send data as JSON
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         if (response.success) {
                             $('#addAdminModal').modal('hide');
                             Swal.fire({
@@ -680,7 +680,7 @@ if (!isset($_SESSION['username'])) {
                     url: '/ems/api/admins', // Endpoint to fetch admins
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);
+                        // console.log(response);
                         // Clear the table and re-populate it with new data
                         adminsTable.clear();
                         adminsTable.rows.add(response).draw();
