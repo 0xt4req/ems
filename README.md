@@ -53,9 +53,14 @@ Ensure you have the following installed:
 3. **Change the baseurl in api/index.php**
 
 # Admin Details:
-- Username: admin
+- Email: admin@example.com
 - Password: password
 - Endpoint: http://localhost/ems/public/views/admin
+
+# Host Details:
+- Email: tareq@gmail.com
+- Password: tareq
+- Endpoint: http://localhost/ems/public/views/login.php
 
 # Databaes design
 
