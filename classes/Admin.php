@@ -9,12 +9,12 @@ class Admin
     {
         if (!isset($_SESSION['username']) && !isset($_SESSION['role'])) {
             http_response_code(302);
-            header('Location: http://localhost/ems/public/views/admin');
+            header('Location: /ems/public/views/admin');
             exit;
         }
         if ($_SESSION['role'] !== 'admin') {
             http_response_code(302);
-            header('Location: http://localhost/ems/public/views/admin');
+            header('Location: /ems/public/views/admin');
             exit;
         }
         $this->conn = $db->getConnection();

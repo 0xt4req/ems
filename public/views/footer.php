@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
     <script>
         // Initialize Particles.js
-        particlesJS.load('particles-js', 'http://localhost/ems/resources/particles.json', function () {
+        particlesJS.load('particles-js', '/ems/resources/particles.json', function () {
             console.log('Particles.js loaded!');
         });
     </script>

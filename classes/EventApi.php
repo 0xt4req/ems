@@ -404,7 +404,6 @@ class EventApi
 
             // Login the user
             if ($admin->Adminlogin($email, $password)) {
-                $baseUrl = "http://localhost/ems";
                 http_response_code(302);
                 echo json_encode(["success" => true, "message" => "Admin logged in successfully", "location" => "$baseUrl/public/views/admin/dashboard.php"]);
                 exit;
@@ -635,7 +634,7 @@ class EventApi
             $user = new Auth($db);
             if ($user->logout()) {
                 http_response_code(302);
-                header('Location: http://localhost/ems/public/views/login.php');
+                header('Location: /ems/public/views/login.php');
                 // echo json_encode(["success" => true, "message" => "User logged out successfully"]);
                 exit;
             } else {
