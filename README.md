@@ -87,7 +87,6 @@ Ensure you have the following installed:
 ## Future Enhancements
 - Add password reset functionalities for the users & admins.
 - Add email notifications for event confirmations.
-- Implement user roles & permissions.
 - Data flow with the uuid.
 - Archive old events.
 - User & Admin Profile Section.
