@@ -16,7 +16,7 @@
                         </div>
                         <div class="form-group password-toggle">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" min="8" required>
                             <span class="toggle-icon" onclick="togglePassword('password')">👁️</span>
                         </div>
                         <br>

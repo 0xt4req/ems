@@ -21,6 +21,20 @@ class EventApi
             $email = htmlspecialchars($data['email']);
             $password = htmlspecialchars($data['password']);
 
+            // check length of username, name, email, password
+            if (strlen($username) > 100 || strlen($name) > 100 || strlen($email) > 100 || strlen($password) > 100) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Username, Name, email, and password must be less than 100 characters"]);
+                exit;
+            }
+
+            // check password length
+            if (strlen($password) < 8) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Password must be at least 8 characters long"]);
+                exit;
+            }
+
             // Check if the username already exists
             if ($user->checkUsernameExists($username)) {
                 echo json_encode(["success" => false, "message" => "Username already exists"]);
@@ -62,6 +76,13 @@ class EventApi
 
             $email = htmlspecialchars($data['email']);
             $password = htmlspecialchars($data['password']);
+
+            // check length of email, password
+            if (strlen($email) > 100 || strlen($password) > 100) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Email and password must be less than 100 characters"]);
+                exit;
+            }
 
             // Login the user
             if ($user->login($email, $password)) {
@@ -132,6 +153,13 @@ class EventApi
             $location = htmlspecialchars($data['location']);
             $maxCapacity = htmlspecialchars($data['max_capacity']);
 
+            // check length of name, location
+            if (strlen($name) > 100 || strlen($location) > 1000) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Name and location must be less than 100 characters"]);
+                exit;
+            }
+
             if($maxCapacity <= 0){
                 http_response_code(400); // Bad Request
                 echo json_encode(["success" => false, "message" => "Max capacity must be greater than 0"]);
@@ -173,6 +201,13 @@ class EventApi
             $time = htmlspecialchars($data['time']);
             $location = htmlspecialchars($data['location']);
             $maxCapacity = filter_var($data['max_capacity'], FILTER_SANITIZE_NUMBER_INT);
+
+            // check length of name, email
+            if (strlen($name) > 100 || strlen($location) > 100) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Name and location must be less than 100 characters"]);
+                exit;
+            }
 
             if($maxCapacity <= 0){
                 http_response_code(400); // Bad Request
@@ -352,6 +387,13 @@ class EventApi
             $name = htmlspecialchars($data['name']);
             $email = htmlspecialchars($data['email']);
 
+            // check length of name, email
+            if (strlen($name) > 100 || strlen($email) > 100) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Name and Email must be less than 100 characters"]);
+                exit;
+            }
+
             // check if the event exists
             if (!$attendees->checkEventExists($eventId)) {
                 echo json_encode(["success" => false, "message" => "Event does not exists"]);
@@ -449,6 +491,20 @@ class EventApi
             $name = htmlspecialchars($data['name']);
             $email = htmlspecialchars($data['email']);
             $password = htmlspecialchars($data['password']);
+
+            // check length of username, name, email, password
+            if (strlen($username) > 100 || strlen($name) > 100 || strlen($email) > 100 || strlen($password) > 100) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Username, Name, Email and Password must be less than 100 characters"]);
+                exit;
+            }
+
+            // check password length
+            if (strlen($password) < 8) {
+                http_response_code(400); // Bad Request
+                echo json_encode(["success" => false, "message" => "Password must be at least 8 characters long"]);
+                exit;
+            }
 
             // check if username already exists
             if (!$admin->checkAdminUsername($username)) {

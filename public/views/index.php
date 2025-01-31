@@ -36,11 +36,11 @@
                     <form id="registrationForm">
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" required>
+                            <input type="text" class="form-control" id="name" maxlength="100" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" required>
+                            <input type="email" class="form-control" id="email" maxlength="100" required>
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
                     </form>

@@ -25,12 +25,12 @@
                         </div>
                         <div class="form-group password-toggle">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" min="8" required>
                             <span class="toggle-icon" onclick="togglePassword('password')">👁️</span>
                         </div>
                         <div class="form-group password-toggle">
                             <label for="confirm-password">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+                            <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm your password" min="8" required>
                             <span class="toggle-icon" onclick="togglePassword('confirm-password')">👁️</span>
                         </div>
                         <br>
