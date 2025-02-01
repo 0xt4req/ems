@@ -19,6 +19,7 @@ This is a simple web-based Event Management System built with pure PHP and MySQL
 - **Responsive UI**: Built with Bootstrap for a modern and user-friendly interface.
 - **Error handling**: Proper error messages and status codes for better error handling.
 - **Access control**: Role-based access control (RBAC) for API calls.
+- **Database design**: Well-structured and normalized database design.
 
 ### Technical Details:
 - This project is based on object-oriented PHP.
@@ -100,6 +101,7 @@ Ensure you have the following installed:
 - Data flow with the uuid.
 - Archive old events.
 - User & Admin Profile Section.
+- Adding pagination in server-side.
 
 ## License
 This project is licensed under the MIT License.
