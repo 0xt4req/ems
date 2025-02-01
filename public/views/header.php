@@ -268,7 +268,7 @@
                         <a class="nav-link" href="register.php">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https://documenter.getpostman.com/view/19858182/2sAYX3phTy#e006b39b-a151-4623-a427-a64e7ed432d5" target="_blank">API Docs</a>
+                        <a class="nav-link" href="https://documenter.getpostman.com/view/19858182/2sAYX3phTy" target="_blank">API Docs</a>
                     </li>
                 </ul>
             </div>
