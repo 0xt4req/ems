@@ -108,6 +108,9 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['rol
     </nav>
 
     <div class="container mt-5">
+        <div class="text-center">
+            <h2>Welcome <strong><?php echo $_SESSION['username']; ?>!</strong></h2>
+        </div>
         <h2>Event Dashboard</h2>
 
         <div class="row">
